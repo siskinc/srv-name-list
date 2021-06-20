@@ -143,3 +143,43 @@ func TestRepoListTypeMgo_Query(t *testing.T) {
 		})
 	}
 }
+
+func TestRepoListTypeMgo_Update(t *testing.T) {
+	collection := createCollection()
+	type fields struct {
+		collection *mongo.Collection
+	}
+	type args struct {
+		listTypeId  primitive.ObjectID
+		isValid     bool
+		description string
+	}
+	oid, _ := primitive.ObjectIDFromHex("60cf3d19c17fee6504e94a10")
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "update1",
+			fields: fields{collection: collection},
+			args: args{
+				listTypeId:  oid,
+				isValid:     true,
+				description: "updated",
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repo := &RepoListTypeMgo{
+				collection: tt.fields.collection,
+			}
+			if err := repo.Update(tt.args.listTypeId, tt.args.isValid, tt.args.description); (err != nil) != tt.wantErr {
+				t.Errorf("Update() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}

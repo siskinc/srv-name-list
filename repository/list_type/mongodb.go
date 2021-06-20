@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/goools/tools/errorx"
 	"github.com/sirupsen/logrus"
+	"github.com/siskinc/srv-name-list/contants/error_code"
 	"github.com/siskinc/srv-name-list/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -124,4 +125,30 @@ func (repo *RepoListTypeMgo) Query(filter bson.D, pageIndex, pageSize int64, sor
 		result = append(result, listType)
 	}
 	return result, nil
+}
+
+func (repo *RepoListTypeMgo) makeUpdate(isValid bool, description string) bson.M {
+	return bson.M{
+		"$set": bson.M{
+			"is_valid": isValid,
+			"description": description,
+		},
+	}
+}
+
+// Update 只允许修改is_valid和description字段
+func (repo *RepoListTypeMgo) Update(listTypeId primitive.ObjectID, isValid bool, description string) error {
+	if listTypeId == primitive.NilObjectID {
+		return fmt.Errorf("list type object is nil")
+	}
+	queryById := repo.makeQueryById(listTypeId)
+	update := repo.makeUpdate(isValid, description)
+	findAndUpdateByIdResult := repo.collection.FindOneAndUpdate(context.Background(), queryById, update)
+	err := findAndUpdateByIdResult.Err()
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return errorx.NewError(error_code.CustomForbiddenNotFoundListType, fmt.Errorf("not found object in db"))
+		}
+	}
+	return nil
 }
