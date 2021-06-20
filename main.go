@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	_ "github.com/siskinc/srv-name-list/global"
 	"github.com/siskinc/srv-name-list/routes"
 )
 
