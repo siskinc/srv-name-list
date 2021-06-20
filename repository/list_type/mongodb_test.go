@@ -11,9 +11,14 @@ import (
 	"time"
 )
 
-func TestRepoListTypeMgo_Create(t *testing.T) {
+func createCollection() *mongo.Collection {
 	database := global.Config.MongoDbDriver.DataBase(global.Config.MongoDbDriver.DatabaseName)
 	collection := database.Collection(types.CollectionNameListType)
+	return collection
+}
+
+func TestRepoListTypeMgo_Create(t *testing.T) {
+	collection := createCollection()
 	type fields struct {
 		collection *mongo.Collection
 	}
@@ -51,6 +56,42 @@ func TestRepoListTypeMgo_Create(t *testing.T) {
 			}
 			if err := repo.Create(tt.args.listType); (err != nil) != tt.wantErr {
 				t.Errorf("Create() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestRepoListTypeMgo_Delete(t *testing.T) {
+	collection := createCollection()
+	type fields struct {
+		collection *mongo.Collection
+	}
+	type args struct {
+		listTypeId primitive.ObjectID
+	}
+	oid, _ := primitive.ObjectIDFromHex("60cf3703685b429d5bf67155")
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "delete",
+			fields: fields{
+				collection: collection,
+			},
+			args: args{listTypeId: oid},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repo := &RepoListTypeMgo{
+				collection: tt.fields.collection,
+			}
+			if err := repo.Delete(tt.args.listTypeId); (err != nil) != tt.wantErr {
+				t.Errorf("Delete() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
