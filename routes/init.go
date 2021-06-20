@@ -17,6 +17,9 @@ func Init(router *gin.Engine) {
 	// 名单类型接口
 	{
 		listTypeGroup.GET("/", list_type.QueryListType)
+		listTypeGroup.POST("/", list_type.CreateListType)
+		listTypeGroup.DELETE("/:id", list_type.DeleteListType)
+		listTypeGroup.PATCH("/:id", list_type.UpdateListType)
 	}
 	// 名单项接口
 	{
