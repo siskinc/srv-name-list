@@ -3,6 +3,7 @@ package driver
 import (
 	"context"
 	"fmt"
+	"github.com/goools/tools/errorx"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -10,12 +11,17 @@ import (
 )
 
 type MongoDbDriver struct {
-	URI    string `json:"uri"`
-	client *mongo.Client
+	URI          string `json:"uri"`
+	DatabaseName string `json:"database_name"`
+	client       *mongo.Client
 }
 
 func (mongoDbDriver *MongoDbDriver) Init() {
-	logrus.Infof("uri: %s", mongoDbDriver.URI)
+	logrus.Infof("mongodb uri: %s", mongoDbDriver.URI)
+	err := mongoDbDriver.Connect()
+	if err != nil {
+		panic(errorx.NewErrorWithLog("connect mongodb have an err: %v", err))
+	}
 }
 
 func (mongoDbDriver *MongoDbDriver) Connect() error {
@@ -33,11 +39,15 @@ func (mongoDbDriver *MongoDbDriver) Connect() error {
 		err = fmt.Errorf("connect mongodb have an err: %v, uri: %s", err, mongoDbDriver.URI)
 		return err
 	}
+	logrus.Infof("connect mongodb successful")
+
+	logrus.Infof("begin ping mongodb")
 	err = mongoDbDriver.client.Ping(context.Background(), readpref.Primary())
 	if err != nil {
 		err = fmt.Errorf("ping mongodb have an err: %v", err)
 		return err
 	}
+	logrus.Infof("ping mongodb successful")
 	return nil
 }
 
@@ -51,4 +61,3 @@ func (mongoDbDriver *MongoDbDriver) DataBase(dbName string, opts ...*options.Dat
 	mongoDbDriver.checkConnect()
 	return mongoDbDriver.client.Database(dbName, opts...)
 }
-

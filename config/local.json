@@ -1,5 +1,6 @@
 {
   "mongo_db_driver": {
-    "uri": ""
+    "uri": "mongodb://nsqd:27017/name_list",
+    "database_name": "name_list"
   }
 }
