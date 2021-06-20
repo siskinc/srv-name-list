@@ -3,11 +3,13 @@ package list_type
 import (
 	"context"
 	"fmt"
+	"github.com/goools/tools/errorx"
 	"github.com/sirupsen/logrus"
 	"github.com/siskinc/srv-name-list/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type RepoListTypeMgo struct {
@@ -83,4 +85,43 @@ func (repo *RepoListTypeMgo) Delete(listTypeId primitive.ObjectID) error {
 	}
 	logrus.Infof("delete list type successful, object id: %s", listTypeId.String())
 	return nil
+}
+
+func (repo *RepoListTypeMgo) Query(filter bson.D, pageIndex, pageSize int64, sortedField string) ([]*models.ListType, error) {
+	var err error
+	if filter == nil {
+		filter = bson.D{}
+	}
+	if pageIndex < 1 {
+		pageIndex = 1
+	}
+	if pageSize < 10 {
+		pageSize = 10
+	}
+	opt := options.Find()
+	opt.SetLimit(pageSize)
+	if pageIndex > 1 {
+		skip := (pageIndex - 1) * pageSize
+		opt.SetSkip(skip)
+	}
+	if sortedField != "" {
+		opt.SetSort(sortedField)
+	}
+	cursor, err := repo.collection.Find(context.Background(), filter, opt)
+	if err != nil {
+		err = errorx.NewErrorWithLog("find list type have an err: %v, filter: %v, pageIndex: %d, pageSize: %d, "+
+			"sortedField: %s", err, filter, pageIndex, pageSize, sortedField)
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+	var result []*models.ListType
+	for cursor.Next(context.Background()) {
+		listType := &models.ListType{}
+		err = cursor.Decode(listType)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, listType)
+	}
+	return result, nil
 }

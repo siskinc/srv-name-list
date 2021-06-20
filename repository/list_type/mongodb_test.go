@@ -5,6 +5,7 @@ import (
 	"github.com/siskinc/srv-name-list/contants/types"
 	"github.com/siskinc/srv-name-list/global"
 	"github.com/siskinc/srv-name-list/models"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"testing"
@@ -93,6 +94,52 @@ func TestRepoListTypeMgo_Delete(t *testing.T) {
 			if err := repo.Delete(tt.args.listTypeId); (err != nil) != tt.wantErr {
 				t.Errorf("Delete() error = %v, wantErr %v", err, tt.wantErr)
 			}
+		})
+	}
+}
+
+func TestRepoListTypeMgo_Query(t *testing.T) {
+	type fields struct {
+		collection *mongo.Collection
+	}
+	type args struct {
+		filter      bson.D
+		pageIndex   int64
+		pageSize    int64
+		sortedField string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    []*models.ListType
+		wantErr bool
+	}{
+		{
+			name: "query1",
+			fields: fields{
+				collection: createCollection(),
+			},
+			args: args{
+				filter:      nil,
+				pageIndex:   0,
+				pageSize:    0,
+				sortedField: "",
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repo := &RepoListTypeMgo{
+				collection: tt.fields.collection,
+			}
+			got, err := repo.Query(tt.args.filter, tt.args.pageIndex, tt.args.pageSize, tt.args.sortedField)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Query() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			t.Logf("got: %v", got)
 		})
 	}
 }
