@@ -26,5 +26,8 @@ func Init(router *gin.Engine) {
 	// 名单项接口
 	{
 		listItemGroup.GET("/", list_item.QueryListItem)
+		listItemGroup.POST("/", list_item.CreateListItem)
+		listItemGroup.DELETE("/:id", list_item.DeleteListItem)
+		listItemGroup.PATCH("/:id", list_item.UpdateListItem)
 	}
 }

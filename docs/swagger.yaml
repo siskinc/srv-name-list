@@ -27,6 +27,36 @@ definitions:
         description: 总数量
         type: integer
     type: object
+  list_item.CreateListItemReq:
+    properties:
+      code:
+        description: 名单类型编码
+        type: string
+      description:
+        description: 描述
+        type: string
+      fields:
+        description: 这类名单的值被构建的字段
+        items:
+          type: string
+        type: array
+      is_valid:
+        description: 是否生效
+        type: boolean
+      namespace:
+        description: 命名空间
+        type: string
+    type: object
+  list_item.UpdateListItemReq:
+    properties:
+      extra:
+        additionalProperties: true
+        description: 可自定义的结构, 不管控
+        type: object
+      is_valid:
+        description: 是否生效
+        type: boolean
+    type: object
   list_type.CreateListTypeReq:
     properties:
       code:
@@ -56,6 +86,33 @@ definitions:
         description: 是否生效
         type: boolean
     type: object
+  models.ListItem:
+    properties:
+      code:
+        description: 名单类型编码
+        type: string
+      extra:
+        additionalProperties: true
+        description: 可自定义的结构, 不管控
+        type: object
+      id:
+        description: 主键id
+        type: string
+      is_valid:
+        description: 是否生效
+        type: boolean
+      multi_value:
+        description: 多项值列表，如果名单是由多个字段构成的，可一一罗列出每个字段的值，如：[{"key":"field1","value":"value1"},{"key":"field2","value":"value2"}]
+        items:
+          $ref: '#/definitions/models.MultiValueItem'
+        type: array
+      namespace:
+        description: 命名空间
+        type: string
+      value:
+        description: 名单项的值
+        type: string
+    type: object
   models.ListType:
     properties:
       code:
@@ -79,6 +136,15 @@ definitions:
         description: 命名空间
         type: string
     type: object
+  models.MultiValueItem:
+    properties:
+      key:
+        description: field name
+        type: string
+      value:
+        description: value
+        type: string
+    type: object
 host: localhost:8000
 info:
   contact:
@@ -93,6 +159,140 @@ info:
   title: Swagger Example API
   version: "1.0"
 paths:
+  /item:
+    get:
+      consumes:
+      - application/json
+      description: 名单项查找功能, 通过code, is_valid, 分页
+      parameters:
+      - description: 是否生效
+        in: query
+        name: is_valid
+        type: boolean
+      - description: 名单类型编码
+        in: query
+        minLength: 1
+        name: code
+        type: string
+      - default: 1
+        description: 页码
+        in: query
+        minimum: 1
+        name: page_index
+        type: integer
+      - default: 10
+        description: 分页大小
+        in: query
+        minimum: 10
+        name: page_size
+        type: integer
+      - description: 排序方式
+        in: query
+        minLength: 1
+        name: sorted_field
+        type: string
+      - description: 命名空间
+        in: query
+        minLength: 1
+        name: namespace
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 正常回包, 回复查询成功的名单类型数据
+          schema:
+            allOf:
+            - $ref: '#/definitions/httpx.JSONResultPaged'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.ListItem'
+                  type: array
+              type: object
+      summary: 名单项查找功能
+      tags:
+      - 名单项
+    post:
+      consumes:
+      - application/json
+      description: 名单项创建功能
+      parameters:
+      - description: 名单属性
+        in: body
+        name: message
+        required: true
+        schema:
+          $ref: '#/definitions/list_item.CreateListItemReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 正常回包, 回复创建成功的名单类型数据
+          schema:
+            allOf:
+            - $ref: '#/definitions/httpx.JSONResult'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ListItem'
+              type: object
+      summary: 名单项创建功能
+      tags:
+      - 名单项
+  /item/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 名单项删除功能, 通过list_item_id删除
+      parameters:
+      - description: 名单项id
+        in: path
+        minLength: 1
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpx.JSONResult'
+      summary: 名单项删除功能
+      tags:
+      - 名单项
+    patch:
+      consumes:
+      - application/json
+      description: 名单项修改功能, 通过code, is_valid, 分页
+      parameters:
+      - description: 名单项id
+        in: path
+        minLength: 1
+        name: id
+        required: true
+        type: string
+      - description: 名单属性
+        in: body
+        name: message
+        required: true
+        schema:
+          $ref: '#/definitions/list_item.UpdateListItemReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 正常回包, 回复更新成功的名单类型数据
+          schema:
+            allOf:
+            - $ref: '#/definitions/httpx.JSONResult'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ListItem'
+              type: object
+      summary: 名单项修改功能
+      tags:
+      - 名单项
   /type:
     get:
       consumes:
@@ -150,7 +350,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: 名单类型查找功能, 通过code, is_valid, 分页
+      description: 名单类型创建功能
       parameters:
       - description: 名单属性
         in: body
@@ -198,7 +398,7 @@ paths:
     patch:
       consumes:
       - application/json
-      description: 名单类型查找功能, 通过code, is_valid, 分页
+      description: 名单类型修改功能, 通过code, is_valid, 分页
       parameters:
       - description: 名单类型id
         in: path
@@ -224,7 +424,7 @@ paths:
                 data:
                   $ref: '#/definitions/models.ListType'
               type: object
-      summary: 名单类型创建功能
+      summary: 名单类型修改功能
       tags:
       - 名单类型
 swagger: "2.0"

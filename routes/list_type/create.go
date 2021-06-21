@@ -21,7 +21,7 @@ type CreateListTypeReq struct {
 // CreateListType godoc
 // @TAGS 名单类型
 // @Summary 名单类型创建功能
-// @Description 名单类型查找功能, 通过code, is_valid, 分页
+// @Description 名单类型创建功能
 // @Accept json
 // @Produce json
 // @Param message body CreateListTypeReq true "名单属性"

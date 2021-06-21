@@ -33,6 +33,218 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/item": {
+            "get": {
+                "description": "名单项查找功能, 通过code, is_valid, 分页",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "名单项"
+                ],
+                "summary": "名单项查找功能",
+                "parameters": [
+                    {
+                        "type": "boolean",
+                        "description": "是否生效",
+                        "name": "is_valid",
+                        "in": "query"
+                    },
+                    {
+                        "minLength": 1,
+                        "type": "string",
+                        "description": "名单类型编码",
+                        "name": "code",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 1,
+                        "description": "页码",
+                        "name": "page_index",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 10,
+                        "type": "integer",
+                        "default": 10,
+                        "description": "分页大小",
+                        "name": "page_size",
+                        "in": "query"
+                    },
+                    {
+                        "minLength": 1,
+                        "type": "string",
+                        "description": "排序方式",
+                        "name": "sorted_field",
+                        "in": "query"
+                    },
+                    {
+                        "minLength": 1,
+                        "type": "string",
+                        "description": "命名空间",
+                        "name": "namespace",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "正常回包, 回复查询成功的名单类型数据",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/httpx.JSONResultPaged"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.ListItem"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "名单项创建功能",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "名单项"
+                ],
+                "summary": "名单项创建功能",
+                "parameters": [
+                    {
+                        "description": "名单属性",
+                        "name": "message",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/list_item.CreateListItemReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "正常回包, 回复创建成功的名单类型数据",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/httpx.JSONResult"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.ListItem"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/item/{id}": {
+            "delete": {
+                "description": "名单项删除功能, 通过list_item_id删除",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "名单项"
+                ],
+                "summary": "名单项删除功能",
+                "parameters": [
+                    {
+                        "minLength": 1,
+                        "type": "string",
+                        "description": "名单项id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httpx.JSONResult"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "名单项修改功能, 通过code, is_valid, 分页",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "名单项"
+                ],
+                "summary": "名单项修改功能",
+                "parameters": [
+                    {
+                        "minLength": 1,
+                        "type": "string",
+                        "description": "名单项id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "名单属性",
+                        "name": "message",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/list_item.UpdateListItemReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "正常回包, 回复更新成功的名单类型数据",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/httpx.JSONResult"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.ListItem"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/type": {
             "get": {
                 "description": "名单类型查找功能, 通过code, is_valid, 分页",
@@ -116,7 +328,7 @@ var doc = `{
                 }
             },
             "post": {
-                "description": "名单类型查找功能, 通过code, is_valid, 分页",
+                "description": "名单类型创建功能",
                 "consumes": [
                     "application/json"
                 ],
@@ -193,7 +405,7 @@ var doc = `{
                 }
             },
             "patch": {
-                "description": "名单类型查找功能, 通过code, is_valid, 分页",
+                "description": "名单类型修改功能, 通过code, is_valid, 分页",
                 "consumes": [
                     "application/json"
                 ],
@@ -203,7 +415,7 @@ var doc = `{
                 "tags": [
                     "名单类型"
                 ],
-                "summary": "名单类型创建功能",
+                "summary": "名单类型修改功能",
                 "parameters": [
                     {
                         "minLength": 1,
@@ -285,6 +497,48 @@ var doc = `{
                 }
             }
         },
+        "list_item.CreateListItemReq": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "名单类型编码",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "描述",
+                    "type": "string"
+                },
+                "fields": {
+                    "description": "这类名单的值被构建的字段",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "is_valid": {
+                    "description": "是否生效",
+                    "type": "boolean"
+                },
+                "namespace": {
+                    "description": "命名空间",
+                    "type": "string"
+                }
+            }
+        },
+        "list_item.UpdateListItemReq": {
+            "type": "object",
+            "properties": {
+                "extra": {
+                    "description": "可自定义的结构, 不管控",
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "is_valid": {
+                    "description": "是否生效",
+                    "type": "boolean"
+                }
+            }
+        },
         "list_type.CreateListTypeReq": {
             "type": "object",
             "properties": {
@@ -326,6 +580,43 @@ var doc = `{
                 }
             }
         },
+        "models.ListItem": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "名单类型编码",
+                    "type": "string"
+                },
+                "extra": {
+                    "description": "可自定义的结构, 不管控",
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "id": {
+                    "description": "主键id",
+                    "type": "string"
+                },
+                "is_valid": {
+                    "description": "是否生效",
+                    "type": "boolean"
+                },
+                "multi_value": {
+                    "description": "多项值列表，如果名单是由多个字段构成的，可一一罗列出每个字段的值，如：[{\"key\":\"field1\",\"value\":\"value1\"},{\"key\":\"field2\",\"value\":\"value2\"}]",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.MultiValueItem"
+                    }
+                },
+                "namespace": {
+                    "description": "命名空间",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "名单项的值",
+                    "type": "string"
+                }
+            }
+        },
         "models.ListType": {
             "type": "object",
             "properties": {
@@ -354,6 +645,19 @@ var doc = `{
                 },
                 "namespace": {
                     "description": "命名空间",
+                    "type": "string"
+                }
+            }
+        },
+        "models.MultiValueItem": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "description": "field name",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "value",
                     "type": "string"
                 }
             }

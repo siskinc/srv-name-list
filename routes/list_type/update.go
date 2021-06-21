@@ -19,8 +19,8 @@ type UpdateListTypeReq struct {
 
 // UpdateListType godoc
 // @TAGS 名单类型
-// @Summary 名单类型创建功能
-// @Description 名单类型查找功能, 通过code, is_valid, 分页
+// @Summary 名单类型修改功能
+// @Description 名单类型修改功能, 通过code, is_valid, 分页
 // @Accept json
 // @Produce json
 // @Param id path string true "名单类型id" minlength(1)
