@@ -18,7 +18,7 @@ type UpdateListTypeReq struct {
 // @Description 名单类型查找功能, 通过code, is_valid, 分页
 // @Accept json
 // @Produce json
-// @Param id path string true "名单类型id"
+// @Param id path string true "名单类型id" minlength(1)
 // @Param message body UpdateListTypeReq true "名单属性"
 // @Success 200 {object} httpx.JSONResult.{data=models.ListType} "正常回包, 回复更新成功的名单类型数据"
 // @Router /type/{id} [patch]

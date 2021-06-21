@@ -6,6 +6,8 @@ import (
 	"github.com/goools/tools/errorx"
 	"github.com/sirupsen/logrus"
 	"github.com/siskinc/srv-name-list/contants/error_code"
+	"github.com/siskinc/srv-name-list/contants/types"
+	"github.com/siskinc/srv-name-list/global"
 	"github.com/siskinc/srv-name-list/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -13,8 +15,17 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+func NewCollection() *mongo.Collection {
+	driver := global.Config.MongoDbDriver
+	return driver.DataBase(driver.DatabaseName).Collection(types.CollectionNameListType)
+}
+
 type RepoListTypeMgo struct {
 	collection *mongo.Collection
+}
+
+func NewRepoListTypeMgo(collection *mongo.Collection) *RepoListTypeMgo {
+	return &RepoListTypeMgo{collection: collection}
 }
 
 func (repo *RepoListTypeMgo) makeQueryByCode(listType *models.ListType) bson.D {
@@ -51,6 +62,9 @@ func (repo *RepoListTypeMgo) Create(listType *models.ListType) error {
 			logrus.Errorf("find list type by code when create a list type have an err: %v", err)
 			return err
 		}
+	} else {
+		err = errorx.NewError(error_code.CustomForbiddenConflictListType, fmt.Errorf("编码为%s已存在", listType.Code))
+		return err
 	}
 
 	result, err := repo.collection.InsertOne(context.Background(), listType)

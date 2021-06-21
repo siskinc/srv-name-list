@@ -160,6 +160,7 @@ var doc = `{
                 "summary": "名单类型删除功能",
                 "parameters": [
                     {
+                        "minLength": 1,
                         "type": "string",
                         "description": "名单类型id",
                         "name": "id",
@@ -202,6 +203,7 @@ var doc = `{
                 "summary": "名单类型创建功能",
                 "parameters": [
                     {
+                        "minLength": 1,
                         "type": "string",
                         "description": "名单类型id",
                         "name": "id",

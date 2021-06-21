@@ -2,8 +2,11 @@ package list_type
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/siskinc/srv-name-list/contants/errs"
 	"github.com/siskinc/srv-name-list/httpx"
 	"github.com/siskinc/srv-name-list/models"
+	listTypeRepo "github.com/siskinc/srv-name-list/repository/list_type"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 )
 
@@ -24,5 +27,24 @@ type CreateListTypeReq struct {
 // @Success 200 {object} httpx.JSONResult.{data=models.ListType} "正常回包, 回复创建成功的名单类型数据"
 // @Router /type [post]
 func CreateListType(c *gin.Context) {
-	c.JSON(http.StatusOK, httpx.JSONResult{Data: models.ListType{}})
+	req := &CreateListTypeReq{}
+	err := c.Bind(req)
+	if err != nil {
+		httpx.SetRespErr(c, errs.CustomForbiddenParameterInvalidError)
+		return
+	}
+	listType := &models.ListType{
+		Id:          primitive.NewObjectID(),
+		Code:        req.Code,
+		Fields:      req.Fields,
+		IsValid:     req.IsValid,
+		Description: req.Description,
+	}
+	repo := listTypeRepo.NewRepoListTypeMgo(listTypeRepo.NewCollection())
+	err = repo.Create(listType)
+	if err != nil {
+		httpx.SetRespErr(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, httpx.JSONResult{Data: listType})
 }

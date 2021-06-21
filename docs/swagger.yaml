@@ -164,6 +164,7 @@ paths:
       parameters:
       - description: 名单类型id
         in: path
+        minLength: 1
         name: id
         required: true
         type: string
@@ -189,6 +190,7 @@ paths:
       parameters:
       - description: 名单类型id
         in: path
+        minLength: 1
         name: id
         required: true
         type: string
