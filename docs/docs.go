@@ -35,7 +35,7 @@ var doc = `{
     "paths": {
         "/type": {
             "get": {
-                "description": "名单类型查找功能, 通过code, is_valid, description, 分页",
+                "description": "名单类型查找功能, 通过code, is_valid, 分页",
                 "consumes": [
                     "application/json"
                 ],
@@ -45,7 +45,75 @@ var doc = `{
                 "tags": [
                     "名单类型"
                 ],
-                "summary": "名单类型查找功能"
+                "summary": "名单类型查找功能",
+                "parameters": [
+                    {
+                        "type": "boolean",
+                        "description": "是否生效",
+                        "name": "is_valid",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "名单类型编码",
+                        "name": "code",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 1,
+                        "description": "页码",
+                        "name": "page_index",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 10,
+                        "type": "integer",
+                        "default": 10,
+                        "description": "分页大小",
+                        "name": "page_size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ListType"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.ListType": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "名单类型编码",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "描述",
+                    "type": "string"
+                },
+                "fields": {
+                    "description": "这类名单的值被构建的字段",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "id": {
+                    "description": "主键id",
+                    "type": "string"
+                },
+                "is_valid": {
+                    "description": "是否生效",
+                    "type": "boolean"
+                }
             }
         }
     }

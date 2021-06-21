@@ -30,5 +30,5 @@ func main() {
 	gin.Logger()
 	url := ginSwagger.URL("http://localhost:8000/swagger/doc.json") // The url pointing to API definition
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
-	router.Run(":8000")
+	router.Run("0.0.0.0:8000")
 }

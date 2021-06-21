@@ -1,4 +1,25 @@
 basePath: /name-list
+definitions:
+  models.ListType:
+    properties:
+      code:
+        description: 名单类型编码
+        type: string
+      description:
+        description: 描述
+        type: string
+      fields:
+        description: 这类名单的值被构建的字段
+        items:
+          type: string
+        type: array
+      id:
+        description: 主键id
+        type: string
+      is_valid:
+        description: 是否生效
+        type: boolean
+    type: object
 host: localhost:8000
 info:
   contact:
@@ -17,9 +38,35 @@ paths:
     get:
       consumes:
       - application/json
-      description: 名单类型查找功能, 通过code, is_valid, description, 分页
+      description: 名单类型查找功能, 通过code, is_valid, 分页
+      parameters:
+      - description: 是否生效
+        in: query
+        name: is_valid
+        type: boolean
+      - description: 名单类型编码
+        in: query
+        name: code
+        type: string
+      - default: 1
+        description: 页码
+        in: query
+        minimum: 1
+        name: page_index
+        type: integer
+      - default: 10
+        description: 分页大小
+        in: query
+        minimum: 10
+        name: page_size
+        type: integer
       produces:
       - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ListType'
       summary: 名单类型查找功能
       tags:
       - 名单类型

@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/siskinc/srv-name-list/middlewares"
 	"github.com/siskinc/srv-name-list/routes/list_item"
@@ -8,6 +9,7 @@ import (
 )
 
 func Init(router *gin.Engine) {
+	router.Use(cors.Default())
 	// LoggerWithFormatter middleware will write the logs to gin.DefaultWriter
 	// By default gin.DefaultWriter = os.Stdout
 	router.Use(gin.LoggerWithFormatter(middlewares.LoggerFormatter))
