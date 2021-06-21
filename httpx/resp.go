@@ -24,7 +24,7 @@ func SetRespJSON(c *gin.Context, data interface{}, message string) {
 	})
 }
 
-func SetRespJSONPaged(c *gin.Context, data interface{}, message string, total int) {
+func SetRespJSONPaged(c *gin.Context, data interface{}, message string, total int64) {
 	c.JSON(http.StatusOK, JSONResultPaged{
 		Code:    0,
 		Message: message,

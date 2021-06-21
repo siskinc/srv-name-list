@@ -54,6 +54,7 @@ var doc = `{
                         "in": "query"
                     },
                     {
+                        "minLength": 1,
                         "type": "string",
                         "description": "名单类型编码",
                         "name": "code",
@@ -73,6 +74,13 @@ var doc = `{
                         "default": 10,
                         "description": "分页大小",
                         "name": "page_size",
+                        "in": "query"
+                    },
+                    {
+                        "minLength": 1,
+                        "type": "string",
+                        "description": "排序方式",
+                        "name": "sorted_field",
                         "in": "query"
                     }
                 ],

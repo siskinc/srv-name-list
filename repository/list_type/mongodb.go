@@ -8,6 +8,7 @@ import (
 	"github.com/siskinc/srv-name-list/contants/error_code"
 	"github.com/siskinc/srv-name-list/contants/types"
 	"github.com/siskinc/srv-name-list/global"
+	"github.com/siskinc/srv-name-list/internal/mongox"
 	"github.com/siskinc/srv-name-list/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -102,7 +103,7 @@ func (repo *RepoListTypeMgo) Delete(listTypeId primitive.ObjectID) error {
 	return nil
 }
 
-func (repo *RepoListTypeMgo) Query(filter bson.D, pageIndex, pageSize int64, sortedField string) ([]*models.ListType, error) {
+func (repo *RepoListTypeMgo) Query(filter bson.D, pageIndex, pageSize int64, sortedField string) ([]*models.ListType, int64, error) {
 	var err error
 	if filter == nil {
 		filter = bson.D{}
@@ -120,13 +121,19 @@ func (repo *RepoListTypeMgo) Query(filter bson.D, pageIndex, pageSize int64, sor
 		opt.SetSkip(skip)
 	}
 	if sortedField != "" {
-		opt.SetSort(sortedField)
+		opt.SetSort(mongox.ConvertSort(sortedField))
+	}
+	total, err := repo.collection.CountDocuments(context.Background(), filter)
+	if err != nil {
+		err = errorx.NewErrorWithLog("count list type have an err: %v, filter: %+v, pageIndex: %d, pageSize: %d, "+
+			"sortedField: %s", err, filter, pageIndex, pageSize, sortedField)
+		return nil, 0, err
 	}
 	cursor, err := repo.collection.Find(context.Background(), filter, opt)
 	if err != nil {
-		err = errorx.NewErrorWithLog("find list type have an err: %v, filter: %v, pageIndex: %d, pageSize: %d, "+
+		err = errorx.NewErrorWithLog("find list type have an err: %v, filter: %+v, pageIndex: %d, pageSize: %d, "+
 			"sortedField: %s", err, filter, pageIndex, pageSize, sortedField)
-		return nil, err
+		return nil, 0, err
 	}
 	defer cursor.Close(context.Background())
 	var result []*models.ListType
@@ -134,11 +141,11 @@ func (repo *RepoListTypeMgo) Query(filter bson.D, pageIndex, pageSize int64, sor
 		listType := &models.ListType{}
 		err = cursor.Decode(listType)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		result = append(result, listType)
 	}
-	return result, nil
+	return result, total, nil
 }
 
 func (repo *RepoListTypeMgo) makeUpdate(isValid bool, description string) bson.M {
