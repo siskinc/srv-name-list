@@ -50,7 +50,7 @@ func UpdateListType(c *gin.Context) {
 			errorx.NewError(error_code.CustomForbiddenParameterInvalid, err),
 		)
 	}
-	repo := listTypeRepo.NewRepoListTypeMgo(listTypeRepo.NewCollection())
+	repo := listTypeRepo.NewRepoListTypeMgo()
 	resp, err := repo.Update(listTypeOid, req.IsValid, req.Description)
 	if err != nil {
 		httpx.SetRespErr(c, err)

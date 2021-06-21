@@ -25,8 +25,8 @@ type RepoListTypeMgo struct {
 	collection *mongo.Collection
 }
 
-func NewRepoListTypeMgo(collection *mongo.Collection) *RepoListTypeMgo {
-	return &RepoListTypeMgo{collection: collection}
+func NewRepoListTypeMgo() *RepoListTypeMgo {
+	return &RepoListTypeMgo{collection: NewCollection()}
 }
 
 func (repo *RepoListTypeMgo) makeQueryByCode(listType *models.ListType) bson.D {

@@ -34,7 +34,7 @@ func DeleteListType(c *gin.Context) {
 		)
 		return
 	}
-	repo := listTypeRepo.NewRepoListTypeMgo(listTypeRepo.NewCollection())
+	repo := listTypeRepo.NewRepoListTypeMgo()
 	err = repo.Delete(listTypeOid)
 	if err != nil {
 		httpx.SetRespErr(c, err)

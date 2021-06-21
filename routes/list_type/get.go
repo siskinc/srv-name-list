@@ -43,7 +43,7 @@ func QueryListType(c *gin.Context) {
 		httpx.SetRespErr(c, errorx.NewError(error_code.CustomForbiddenParameterInvalid, err))
 		return
 	}
-	repo := listTypeRepo.NewRepoListTypeMgo(listTypeRepo.NewCollection())
+	repo := listTypeRepo.NewRepoListTypeMgo()
 	filter := bson.D{}
 	if req.IsValid != nil {
 		filter = append(filter, bson.E{Key: "is_valid", Value: *req.IsValid})

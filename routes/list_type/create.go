@@ -42,7 +42,7 @@ func CreateListType(c *gin.Context) {
 		IsValid:     req.IsValid,
 		Description: req.Description,
 	}
-	repo := listTypeRepo.NewRepoListTypeMgo(listTypeRepo.NewCollection())
+	repo := listTypeRepo.NewRepoListTypeMgo()
 	err = repo.Create(listType)
 	if err != nil {
 		httpx.SetRespErr(c, err)
