@@ -144,16 +144,16 @@ func (repo *RepoListTypeMgo) Query(filter bson.D, pageIndex, pageSize int64, sor
 func (repo *RepoListTypeMgo) makeUpdate(isValid bool, description string) bson.M {
 	return bson.M{
 		"$set": bson.M{
-			"is_valid": isValid,
+			"is_valid":    isValid,
 			"description": description,
 		},
 	}
 }
 
 // Update 只允许修改is_valid和description字段
-func (repo *RepoListTypeMgo) Update(listTypeId primitive.ObjectID, isValid bool, description string) error {
+func (repo *RepoListTypeMgo) Update(listTypeId primitive.ObjectID, isValid bool, description string) (*models.ListType, error) {
 	if listTypeId == primitive.NilObjectID {
-		return fmt.Errorf("list type object is nil")
+		return nil, fmt.Errorf("list type object is nil")
 	}
 	queryById := repo.makeQueryById(listTypeId)
 	update := repo.makeUpdate(isValid, description)
@@ -161,8 +161,14 @@ func (repo *RepoListTypeMgo) Update(listTypeId primitive.ObjectID, isValid bool,
 	err := findAndUpdateByIdResult.Err()
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return errorx.NewError(error_code.CustomForbiddenNotFoundListType, fmt.Errorf("not found object in db"))
+			return nil, errorx.NewError(error_code.CustomForbiddenNotFoundListType, fmt.Errorf("not found object in db"))
 		}
 	}
-	return nil
+	listType := &models.ListType{}
+	err = findAndUpdateByIdResult.Decode(listType)
+	if err != nil {
+		logrus.Errorf("cannot decode to ListType, err: %v", err)
+		return nil, err
+	}
+	return listType, nil
 }

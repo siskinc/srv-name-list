@@ -25,7 +25,13 @@ func DeleteListType(c *gin.Context) {
 	listTypeOid, err := primitive.ObjectIDFromHex(listTypeId)
 	if err != nil {
 		logrus.Errorf("list type id: %s, cannot convert to object id", listTypeId)
-		httpx.SetRespErr(c, errorx.NewError(error_code.CustomForbiddenParameterInvalid, fmt.Errorf("%s不是一个合法的id", listTypeId)))
+		httpx.SetRespErr(
+			c,
+			errorx.NewError(
+				error_code.CustomForbiddenParameterInvalid,
+				fmt.Errorf("%s不是一个合法的id", listTypeId),
+			),
+		)
 		return
 	}
 	repo := listTypeRepo.NewRepoListTypeMgo(listTypeRepo.NewCollection())
