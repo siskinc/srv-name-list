@@ -82,6 +82,13 @@ var doc = `{
                         "description": "排序方式",
                         "name": "sorted_field",
                         "in": "query"
+                    },
+                    {
+                        "minLength": 1,
+                        "type": "string",
+                        "description": "命名空间",
+                        "name": "namespace",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -299,6 +306,10 @@ var doc = `{
                 "is_valid": {
                     "description": "是否生效",
                     "type": "boolean"
+                },
+                "namespace": {
+                    "description": "命名空间",
+                    "type": "string"
                 }
             }
         },
@@ -340,6 +351,10 @@ var doc = `{
                 "is_valid": {
                     "description": "是否生效",
                     "type": "boolean"
+                },
+                "namespace": {
+                    "description": "命名空间",
+                    "type": "string"
                 }
             }
         }

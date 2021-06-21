@@ -43,6 +43,9 @@ definitions:
       is_valid:
         description: 是否生效
         type: boolean
+      namespace:
+        description: 命名空间
+        type: string
     type: object
   list_type.UpdateListTypeReq:
     properties:
@@ -72,6 +75,9 @@ definitions:
       is_valid:
         description: 是否生效
         type: boolean
+      namespace:
+        description: 命名空间
+        type: string
     type: object
 host: localhost:8000
 info:
@@ -118,6 +124,11 @@ paths:
         in: query
         minLength: 1
         name: sorted_field
+        type: string
+      - description: 命名空间
+        in: query
+        minLength: 1
+        name: namespace
         type: string
       produces:
       - application/json

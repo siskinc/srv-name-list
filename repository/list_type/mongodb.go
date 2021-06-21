@@ -35,6 +35,10 @@ func (repo *RepoListTypeMgo) makeQueryByCode(listType *models.ListType) bson.D {
 			Key:   "code",
 			Value: listType.Code,
 		},
+		{
+			Key:   "namespace",
+			Value: listType.Namespace,
+		},
 	}
 }
 
@@ -64,7 +68,8 @@ func (repo *RepoListTypeMgo) Create(listType *models.ListType) error {
 			return err
 		}
 	} else {
-		err = errorx.NewError(error_code.CustomForbiddenConflictListType, fmt.Errorf("编码为%s已存在", listType.Code))
+		err = errorx.NewError(error_code.CustomForbiddenConflictListType,
+			fmt.Errorf("%s命名空间下编码为%s已存在", listType.Namespace, listType.Code))
 		return err
 	}
 

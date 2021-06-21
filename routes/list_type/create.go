@@ -11,6 +11,7 @@ import (
 )
 
 type CreateListTypeReq struct {
+	Namespace   string   `json:"namespace"`   // 命名空间
 	Code        string   `json:"code"`        // 名单类型编码
 	Fields      []string `json:"fields"`      // 这类名单的值被构建的字段
 	IsValid     bool     `json:"is_valid"`    // 是否生效
@@ -35,6 +36,7 @@ func CreateListType(c *gin.Context) {
 	}
 	listType := &models.ListType{
 		Id:          primitive.NewObjectID(),
+		Namespace:   req.Namespace,
 		Code:        req.Code,
 		Fields:      req.Fields,
 		IsValid:     req.IsValid,

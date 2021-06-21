@@ -14,6 +14,7 @@ import (
 )
 
 type QueryListTypeReq struct {
+	Namespace   *string `form:"namespace"`
 	IsValid     *bool   `form:"is_valid"`
 	Code        *string `form:"code"`
 	SortedField *string `form:"sorted_field"`
@@ -32,6 +33,7 @@ type QueryListTypeReq struct {
 // @Param page_index query int false "页码" minimum(1) default(1)
 // @Param page_size query int false "分页大小" minimum(10) default(10)
 // @Param sorted_field query string false "排序方式" minlength(1)
+// @Param namespace query string false "命名空间" minlength(1)
 // @Success 200 {object} httpx.JSONResultPaged.{data=[]models.ListType} "正常回包, 回复查询成功的名单类型数据"
 // @Router /type [get]
 func QueryListType(c *gin.Context) {
@@ -52,6 +54,9 @@ func QueryListType(c *gin.Context) {
 			Value: bson.D{{"$regex", primitive.Regex{Pattern: fmt.Sprintf("%s", *req.Code), Options: "i"}}},
 		}
 		filter = append(filter, regexFilter)
+	}
+	if req.Namespace != nil {
+		filter = append(filter, bson.E{Key: "namespace", Value: *req.Namespace})
 	}
 	sortedField := "-_id"
 	if req.SortedField != nil && *req.SortedField != "" {
