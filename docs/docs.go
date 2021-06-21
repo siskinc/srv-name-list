@@ -172,19 +172,7 @@ var doc = `{
                     "200": {
                         "description": "正常回包, 回复删除成功的名单类型数据",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/httpx.JSONResult"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/models.ListType"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/httpx.JSONResult"
                         }
                     }
                 }
