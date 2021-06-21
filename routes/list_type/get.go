@@ -2,6 +2,7 @@ package list_type
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/siskinc/srv-name-list/httpx"
 	"github.com/siskinc/srv-name-list/models"
 	"net/http"
 )
@@ -16,8 +17,8 @@ import (
 // @Param code query string false "名单类型编码"
 // @Param page_index query int false "页码" minimum(1) default(1)
 // @Param page_size query int false "分页大小" minimum(10) default(10)
-// @Success 200 {object} models.ListType
+// @Success 200 {object} httpx.JSONResultPaged.{data=[]models.ListType} "正常回包, 回复查询成功的名单类型数据"
 // @Router /type [get]
 func QueryListType(c *gin.Context) {
-	c.JSON(http.StatusOK, []models.ListType{})
+	c.JSON(http.StatusOK, httpx.JSONResultPaged{Data: []models.ListType{}})
 }
