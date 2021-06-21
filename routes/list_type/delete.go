@@ -6,7 +6,7 @@ import (
 	"github.com/goools/tools/errorx"
 	"github.com/sirupsen/logrus"
 	"github.com/siskinc/srv-name-list/contants/error_code"
-	"github.com/siskinc/srv-name-list/httpx"
+	"github.com/siskinc/srv-name-list/internal/httpx"
 	listTypeRepo "github.com/siskinc/srv-name-list/repository/list_type"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )

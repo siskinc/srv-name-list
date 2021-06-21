@@ -3,7 +3,7 @@ package list_type
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/siskinc/srv-name-list/contants/errs"
-	"github.com/siskinc/srv-name-list/httpx"
+	"github.com/siskinc/srv-name-list/internal/httpx"
 	"github.com/siskinc/srv-name-list/models"
 	listTypeRepo "github.com/siskinc/srv-name-list/repository/list_type"
 	"go.mongodb.org/mongo-driver/bson/primitive"
