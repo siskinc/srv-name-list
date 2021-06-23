@@ -204,7 +204,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/list_item.UpdateListItemReq"
+                            "$ref": "#/definitions/list_item.ListItemUpdateInfo"
                         }
                     }
                 ],
@@ -513,7 +513,7 @@
                 }
             }
         },
-        "list_item.UpdateListItemReq": {
+        "list_item.ListItemUpdateInfo": {
             "type": "object",
             "properties": {
                 "extra": {

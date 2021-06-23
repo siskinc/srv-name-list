@@ -41,7 +41,7 @@ func (repo *RepoListItemMgo) Create(listItem *models.ListItem) error {
 	return nil
 }
 
-func (repo *RepoListItemMgo) UpdateById(oid primitive.ObjectID, updater bson.E) (err error) {
+func (repo *RepoListItemMgo) UpdateById(oid primitive.ObjectID, updater bson.M) (err error) {
 	_, err = repo.collection.UpdateByID(context.Background(), oid, updater)
 	return
 }

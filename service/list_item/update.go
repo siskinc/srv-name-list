@@ -16,7 +16,7 @@ type ListItemUpdateInfo struct {
 	Extra   *map[string]interface{} `json:"extra"`    // 可自定义的结构, 不管控
 }
 
-func (service *ListItemService) makeUpdater(info *ListItemUpdateInfo) bson.E {
+func (service *ListItemService) makeUpdater(info *ListItemUpdateInfo) bson.M {
 	value := bson.M{}
 	if info.IsValid != nil {
 		value["is_valid"] = *info.IsValid
@@ -27,9 +27,8 @@ func (service *ListItemService) makeUpdater(info *ListItemUpdateInfo) bson.E {
 	if len(value) == 0 {
 		value = nil
 	}
-	return bson.E{
-		Key: "$set",
-		Value: value,
+	return bson.M{
+		"$set": value,
 	}
 }
 
@@ -39,7 +38,7 @@ func (service *ListItemService) Update(oid primitive.ObjectID, info *ListItemUpd
 		return
 	}
 	updater := service.makeUpdater(info)
-	if updater.Value == nil {
+	if updater["$set"] == nil {
 		return
 	}
 	err = service.listItemRepoObj.UpdateById(oid, updater)

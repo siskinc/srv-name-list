@@ -49,7 +49,7 @@ definitions:
     - namespace
     - values
     type: object
-  list_item.UpdateListItemReq:
+  list_item.ListItemUpdateInfo:
     properties:
       extra:
         additionalProperties: true
@@ -279,7 +279,7 @@ paths:
         name: message
         required: true
         schema:
-          $ref: '#/definitions/list_item.UpdateListItemReq'
+          $ref: '#/definitions/list_item.ListItemUpdateInfo'
       produces:
       - application/json
       responses:

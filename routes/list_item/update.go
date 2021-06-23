@@ -1,9 +1,14 @@
 package list_item
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/goools/tools/errorx"
+	"github.com/sirupsen/logrus"
+	"github.com/siskinc/srv-name-list/contants/error_code"
 	"github.com/siskinc/srv-name-list/internal/httpx"
-	"github.com/siskinc/srv-name-list/models"
+	listItemService "github.com/siskinc/srv-name-list/service/list_item"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type UpdateListItemReq struct {
@@ -18,9 +23,35 @@ type UpdateListItemReq struct {
 // @Accept json
 // @Produce json
 // @Param id path string true "名单项id" minlength(1)
-// @Param message body UpdateListItemReq true "名单属性"
+// @Param message body listItemService.ListItemUpdateInfo true "名单属性"
 // @Success 200 {object} httpx.JSONResult.{data=models.ListItem} "正常回包, 回复更新成功的名单类型数据"
 // @Router /item/{id} [patch]
 func UpdateListItem(c *gin.Context) {
-	httpx.SetRespJSON(c, models.ListItem{}, "")
+	listItemId := c.Param("id")
+	listItemOid, err := primitive.ObjectIDFromHex(listItemId)
+	if err != nil {
+		logrus.Errorf("list item id: %s, cannot convert to object id", listItemId)
+		httpx.SetRespErr(
+			c,
+			errorx.NewError(
+				error_code.CustomForbiddenParameterInvalid,
+				fmt.Errorf("%s不是一个合法的id", listItemId),
+			),
+		)
+		return
+	}
+	req := &listItemService.ListItemUpdateInfo{}
+	err = c.Bind(req)
+	if err != nil {
+		logrus.Errorf("cannot format data to listItemService.ListItemUpdateInfo")
+		httpx.SetRespErr(c, errorx.NewError(error_code.CustomForbiddenParameterInvalid, err))
+		return
+	}
+	listItemServiceObj := listItemService.NewListItemService()
+	listItem, err := listItemServiceObj.Update(listItemOid, req)
+	if err != nil {
+		httpx.SetRespErr(c, err)
+		return
+	}
+	httpx.SetRespJSON(c, listItem, "")
 }

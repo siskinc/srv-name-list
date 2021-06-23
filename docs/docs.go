@@ -219,7 +219,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/list_item.UpdateListItemReq"
+                            "$ref": "#/definitions/list_item.ListItemUpdateInfo"
                         }
                     }
                 ],
@@ -528,7 +528,7 @@ var doc = `{
                 }
             }
         },
-        "list_item.UpdateListItemReq": {
+        "list_item.ListItemUpdateInfo": {
             "type": "object",
             "properties": {
                 "extra": {
