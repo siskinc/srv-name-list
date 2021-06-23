@@ -3,6 +3,7 @@ package list_item
 import (
 	"context"
 	"fmt"
+	"github.com/goools/tools/errorx"
 	"github.com/sirupsen/logrus"
 	"github.com/siskinc/srv-name-list/contants/types"
 	"github.com/siskinc/srv-name-list/global"
@@ -62,4 +63,37 @@ func (repo *RepoListItemMgo) FindById(oid primitive.ObjectID) (listItem *models.
 		return
 	}
 	return
+}
+
+func (repo *RepoListItemMgo) Query(filter bson.D, pageIndex, pageSize int64, sortedField string) ([]*models.ListItem, int64, error) {
+	var err error
+	if filter == nil {
+		filter = bson.D{}
+	}
+
+	opt := mongox.MakeFindPageOpt(nil, pageIndex, pageSize)
+	opt = mongox.MakeSortedFieldOpt(opt, sortedField)
+	total, err := repo.collection.CountDocuments(context.Background(), filter)
+	if err != nil {
+		err = errorx.NewErrorWithLog("count list item have an err: %v, filter: %+v, pageIndex: %d, pageSize: %d, "+
+			"sortedField: %s", err, filter, pageIndex, pageSize, sortedField)
+		return nil, 0, err
+	}
+	cursor, err := repo.collection.Find(context.Background(), filter, opt)
+	if err != nil {
+		err = errorx.NewErrorWithLog("find list item have an err: %v, filter: %+v, pageIndex: %d, pageSize: %d, "+
+			"sortedField: %s", err, filter, pageIndex, pageSize, sortedField)
+		return nil, 0, err
+	}
+	defer cursor.Close(context.Background())
+	var result []*models.ListItem
+	for cursor.Next(context.Background()) {
+		listItem := &models.ListItem{}
+		err = cursor.Decode(listItem)
+		if err != nil {
+			return nil, 0, err
+		}
+		result = append(result, listItem)
+	}
+	return result, total, nil
 }

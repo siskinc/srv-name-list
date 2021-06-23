@@ -12,7 +12,7 @@ import (
 
 // @title Swagger Example API
 // @version 1.0
-// @description This is a sample server Petstore server.
+// @description 名单管理系统
 // @termsOfService http://swagger.io/terms/
 
 // @contact.name API Support

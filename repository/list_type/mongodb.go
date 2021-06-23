@@ -13,7 +13,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func NewCollection() *mongo.Collection {
@@ -119,15 +118,8 @@ func (repo *RepoListTypeMgo) Query(filter bson.D, pageIndex, pageSize int64, sor
 	if pageSize < 10 {
 		pageSize = 10
 	}
-	opt := options.Find()
-	opt.SetLimit(pageSize)
-	if pageIndex > 1 {
-		skip := (pageIndex - 1) * pageSize
-		opt.SetSkip(skip)
-	}
-	if sortedField != "" {
-		opt.SetSort(mongox.ConvertSort(sortedField))
-	}
+	opt := mongox.MakeFindPageOpt(nil, pageIndex, pageSize)
+	opt = mongox.MakeSortedFieldOpt(opt, sortedField)
 	total, err := repo.collection.CountDocuments(context.Background(), filter)
 	if err != nil {
 		err = errorx.NewErrorWithLog("count list type have an err: %v, filter: %+v, pageIndex: %d, pageSize: %d, "+

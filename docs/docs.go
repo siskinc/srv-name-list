@@ -48,46 +48,40 @@ var doc = `{
                 "summary": "名单项查找功能",
                 "parameters": [
                     {
-                        "type": "boolean",
-                        "description": "是否生效",
-                        "name": "is_valid",
-                        "in": "query"
-                    },
-                    {
-                        "minLength": 1,
                         "type": "string",
-                        "description": "名单类型编码",
+                        "description": "Code",
                         "name": "code",
                         "in": "query"
                     },
                     {
-                        "minimum": 1,
-                        "type": "integer",
-                        "default": 1,
-                        "description": "页码",
-                        "name": "page_index",
+                        "type": "boolean",
+                        "description": "是否生效",
+                        "name": "isValid",
                         "in": "query"
                     },
                     {
-                        "minimum": 10,
-                        "type": "integer",
-                        "default": 10,
-                        "description": "分页大小",
-                        "name": "page_size",
-                        "in": "query"
-                    },
-                    {
-                        "minLength": 1,
-                        "type": "string",
-                        "description": "排序方式",
-                        "name": "sorted_field",
-                        "in": "query"
-                    },
-                    {
-                        "minLength": 1,
                         "type": "string",
                         "description": "命名空间",
                         "name": "namespace",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "PageIndex",
+                        "name": "pageIndex",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "PageSize",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "SortedField",
+                        "name": "sortedField",
                         "in": "query"
                     }
                 ],
@@ -472,7 +466,8 @@ var doc = `{
                 },
                 "message": {
                     "description": "回报message，在code != 0时，展示给前端",
-                    "type": "string"
+                    "type": "string",
+                    "example": "success"
                 }
             }
         },
@@ -489,7 +484,8 @@ var doc = `{
                 },
                 "message": {
                     "description": "回报message，在code != 0时，展示给前端",
-                    "type": "string"
+                    "type": "string",
+                    "example": "success"
                 },
                 "total": {
                     "description": "总数量",
@@ -588,7 +584,8 @@ var doc = `{
             "properties": {
                 "code": {
                     "description": "名单类型编码",
-                    "type": "string"
+                    "type": "string",
+                    "example": "telephone__red"
                 },
                 "extra": {
                     "description": "可自定义的结构, 不管控",
@@ -597,7 +594,8 @@ var doc = `{
                 },
                 "id": {
                     "description": "主键id",
-                    "type": "string"
+                    "type": "string",
+                    "example": "60d2b17f70d9d2f0db53f866"
                 },
                 "is_valid": {
                     "description": "是否生效",
@@ -612,11 +610,13 @@ var doc = `{
                 },
                 "namespace": {
                     "description": "命名空间",
-                    "type": "string"
+                    "type": "string",
+                    "example": "anti-fraud"
                 },
                 "value": {
                     "description": "名单项的值",
-                    "type": "string"
+                    "type": "string",
+                    "example": "13333333333"
                 }
             }
         },
@@ -625,22 +625,29 @@ var doc = `{
             "properties": {
                 "code": {
                     "description": "名单类型编码",
-                    "type": "string"
+                    "type": "string",
+                    "example": "telephone__red"
                 },
                 "description": {
                     "description": "描述",
-                    "type": "string"
+                    "type": "string",
+                    "example": "descriptions"
                 },
                 "fields": {
                     "description": "这类名单的值被构建的字段",
                     "type": "array",
                     "items": {
                         "type": "string"
-                    }
+                    },
+                    "example": [
+                        "telephone",
+                        "id_card"
+                    ]
                 },
                 "id": {
                     "description": "主键id",
-                    "type": "string"
+                    "type": "string",
+                    "example": "60d2b17f70d9d2f0db53f866"
                 },
                 "is_valid": {
                     "description": "是否生效",
@@ -648,7 +655,8 @@ var doc = `{
                 },
                 "namespace": {
                     "description": "命名空间",
-                    "type": "string"
+                    "type": "string",
+                    "example": "anti-fraud"
                 }
             }
         },
@@ -657,11 +665,13 @@ var doc = `{
             "properties": {
                 "key": {
                     "description": "field name",
-                    "type": "string"
+                    "type": "string",
+                    "example": "telephone"
                 },
                 "value": {
                     "description": "value",
-                    "type": "string"
+                    "type": "string",
+                    "example": "13333333333"
                 }
             }
         }
@@ -684,7 +694,7 @@ var SwaggerInfo = swaggerInfo{
 	BasePath:    "/name-list",
 	Schemes:     []string{},
 	Title:       "Swagger Example API",
-	Description: "This is a sample server Petstore server.",
+	Description: "名单管理系统",
 }
 
 type s struct{}

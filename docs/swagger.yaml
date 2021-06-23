@@ -10,6 +10,7 @@ definitions:
         type: object
       message:
         description: 回报message，在code != 0时，展示给前端
+        example: success
         type: string
     type: object
   httpx.JSONResultPaged:
@@ -22,6 +23,7 @@ definitions:
         type: object
       message:
         description: 回报message，在code != 0时，展示给前端
+        example: success
         type: string
       total:
         description: 总数量
@@ -92,6 +94,7 @@ definitions:
     properties:
       code:
         description: 名单类型编码
+        example: telephone__red
         type: string
       extra:
         additionalProperties: true
@@ -99,6 +102,7 @@ definitions:
         type: object
       id:
         description: 主键id
+        example: 60d2b17f70d9d2f0db53f866
         type: string
       is_valid:
         description: 是否生效
@@ -110,41 +114,52 @@ definitions:
         type: array
       namespace:
         description: 命名空间
+        example: anti-fraud
         type: string
       value:
         description: 名单项的值
+        example: "13333333333"
         type: string
     type: object
   models.ListType:
     properties:
       code:
         description: 名单类型编码
+        example: telephone__red
         type: string
       description:
         description: 描述
+        example: descriptions
         type: string
       fields:
         description: 这类名单的值被构建的字段
+        example:
+        - telephone
+        - id_card
         items:
           type: string
         type: array
       id:
         description: 主键id
+        example: 60d2b17f70d9d2f0db53f866
         type: string
       is_valid:
         description: 是否生效
         type: boolean
       namespace:
         description: 命名空间
+        example: anti-fraud
         type: string
     type: object
   models.MultiValueItem:
     properties:
       key:
         description: field name
+        example: telephone
         type: string
       value:
         description: value
+        example: "13333333333"
         type: string
     type: object
 host: localhost:8000
@@ -153,7 +168,7 @@ info:
     email: support@swagger.io
     name: API Support
     url: http://www.swagger.io/support
-  description: This is a sample server Petstore server.
+  description: 名单管理系统
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
@@ -167,36 +182,30 @@ paths:
       - application/json
       description: 名单项查找功能, 通过code, is_valid, 分页
       parameters:
-      - description: 是否生效
+      - description: Code
         in: query
-        name: is_valid
-        type: boolean
-      - description: 名单类型编码
-        in: query
-        minLength: 1
         name: code
         type: string
-      - default: 1
-        description: 页码
+      - description: 是否生效
         in: query
-        minimum: 1
-        name: page_index
-        type: integer
-      - default: 10
-        description: 分页大小
-        in: query
-        minimum: 10
-        name: page_size
-        type: integer
-      - description: 排序方式
-        in: query
-        minLength: 1
-        name: sorted_field
-        type: string
+        name: isValid
+        type: boolean
       - description: 命名空间
         in: query
-        minLength: 1
         name: namespace
+        required: true
+        type: string
+      - description: PageIndex
+        in: query
+        name: pageIndex
+        type: integer
+      - description: PageSize
+        in: query
+        name: pageSize
+        type: integer
+      - description: SortedField
+        in: query
+        name: sortedField
         type: string
       produces:
       - application/json
