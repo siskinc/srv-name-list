@@ -46,6 +46,12 @@ func (repo *RepoListItemMgo) UpdateById(oid primitive.ObjectID, updater bson.M) 
 	return
 }
 
+func (repo *RepoListItemMgo) DeleteById(oid primitive.ObjectID) (err error) {
+	query := mongox.MakeQueryByID(oid)
+	_, err = repo.collection.DeleteOne(context.Background(), query)
+	return
+}
+
 func (repo *RepoListItemMgo) FindById(oid primitive.ObjectID) (listItem *models.ListItem, err error) {
 	query := mongox.MakeQueryByID(oid)
 	result := repo.collection.FindOne(context.Background(), query)
