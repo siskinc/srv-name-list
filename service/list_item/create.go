@@ -5,7 +5,6 @@ import (
 	"github.com/goools/tools/errorx"
 	"github.com/siskinc/srv-name-list/contants/error_code"
 	"github.com/siskinc/srv-name-list/models"
-	listItemRepo "github.com/siskinc/srv-name-list/repository/list_item"
 	listTypeRepo "github.com/siskinc/srv-name-list/repository/list_type"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -68,8 +67,7 @@ func (service *ListItemService) Create(listItemCreateInfo *ListItemCreateInfo) (
 		IsValid:    listItemCreateInfo.IsValid,
 		Extra:      listItemCreateInfo.Extra,
 	}
-	listItemRepoObj := listItemRepo.NewRepoListItemMgo()
-	err = listItemRepoObj.Create(listItem)
+	err = service.listItemRepoObj.Create(listItem)
 	if err != nil {
 		return nil, err
 	}

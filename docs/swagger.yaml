@@ -27,25 +27,27 @@ definitions:
         description: 总数量
         type: integer
     type: object
-  list_item.CreateListItemReq:
+  list_item.ListItemCreateInfo:
     properties:
       code:
-        description: 名单类型编码
         type: string
-      description:
-        description: 描述
+      extra:
+        additionalProperties: true
+        type: object
+      is_valid:
+        type: boolean
+      namespace:
         type: string
-      fields:
-        description: 这类名单的值被构建的字段
+      values:
+        description: 与list type中的fields一一对应的
         items:
           type: string
         type: array
-      is_valid:
-        description: 是否生效
-        type: boolean
-      namespace:
-        description: 命名空间
-        type: string
+    required:
+    - code
+    - is_valid
+    - namespace
+    - values
     type: object
   list_item.UpdateListItemReq:
     properties:
@@ -223,7 +225,7 @@ paths:
         name: message
         required: true
         schema:
-          $ref: '#/definitions/list_item.CreateListItemReq'
+          $ref: '#/definitions/list_item.ListItemCreateInfo'
       produces:
       - application/json
       responses:

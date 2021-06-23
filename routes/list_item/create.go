@@ -2,17 +2,13 @@ package list_item
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/goools/tools/errorx"
+	"github.com/sirupsen/logrus"
+	"github.com/siskinc/srv-name-list/contants/error_code"
 	"github.com/siskinc/srv-name-list/internal/httpx"
-	"github.com/siskinc/srv-name-list/models"
+	listItemService "github.com/siskinc/srv-name-list/service/list_item"
 )
 
-type CreateListItemReq struct {
-	Namespace   string   `json:"namespace"`   // 命名空间
-	Code        string   `json:"code"`        // 名单类型编码
-	Fields      []string `json:"fields"`      // 这类名单的值被构建的字段
-	IsValid     bool     `json:"is_valid"`    // 是否生效
-	Description string   `json:"description"` // 描述
-}
 
 // CreateListItem godoc
 // @TAGS 名单项
@@ -20,9 +16,23 @@ type CreateListItemReq struct {
 // @Description 名单项创建功能
 // @Accept json
 // @Produce json
-// @Param message body CreateListItemReq true "名单属性"
+// @Param message body listItemService.ListItemCreateInfo true "名单属性"
 // @Success 200 {object} httpx.JSONResult.{data=models.ListItem} "正常回包, 回复创建成功的名单类型数据"
 // @Router /item [post]
 func CreateListItem(c *gin.Context) {
-	httpx.SetRespJSON(c, models.ListItem{}, "")
+	req := &listItemService.ListItemCreateInfo{}
+	var err error
+	err = c.Bind(req)
+	if err != nil {
+		logrus.Errorf("cannot format data to listItemService.ListItemCreateInfo")
+		httpx.SetRespErr(c, errorx.NewError(error_code.CustomForbiddenParameterInvalid, err))
+		return
+	}
+	listItemServiceObj := listItemService.NewListItemService()
+	listItem, err := listItemServiceObj.Create(req)
+	if err != nil {
+		httpx.SetRespErr(c, err)
+		return
+	}
+	httpx.SetRespJSON(c, listItem, "")
 }

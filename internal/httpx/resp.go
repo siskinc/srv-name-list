@@ -17,6 +17,9 @@ func SetRespErr(c *gin.Context, err error) {
 }
 
 func SetRespJSON(c *gin.Context, data interface{}, message string) {
+	if message == "" {
+		message = "success"
+	}
 	c.JSON(http.StatusOK, JSONResult{
 		Code:    0,
 		Message: message,
@@ -25,6 +28,9 @@ func SetRespJSON(c *gin.Context, data interface{}, message string) {
 }
 
 func SetRespJSONPaged(c *gin.Context, data interface{}, message string, total int64) {
+	if message == "" {
+		message = "success"
+	}
 	c.JSON(http.StatusOK, JSONResultPaged{
 		Code:    0,
 		Message: message,

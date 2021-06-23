@@ -134,7 +134,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/list_item.CreateListItemReq"
+                            "$ref": "#/definitions/list_item.ListItemCreateInfo"
                         }
                     }
                 ],
@@ -497,31 +497,34 @@ var doc = `{
                 }
             }
         },
-        "list_item.CreateListItemReq": {
+        "list_item.ListItemCreateInfo": {
             "type": "object",
+            "required": [
+                "code",
+                "is_valid",
+                "namespace",
+                "values"
+            ],
             "properties": {
                 "code": {
-                    "description": "名单类型编码",
                     "type": "string"
                 },
-                "description": {
-                    "description": "描述",
+                "extra": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "is_valid": {
+                    "type": "boolean"
+                },
+                "namespace": {
                     "type": "string"
                 },
-                "fields": {
-                    "description": "这类名单的值被构建的字段",
+                "values": {
+                    "description": "与list type中的fields一一对应的",
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
-                },
-                "is_valid": {
-                    "description": "是否生效",
-                    "type": "boolean"
-                },
-                "namespace": {
-                    "description": "命名空间",
-                    "type": "string"
                 }
             }
         },
