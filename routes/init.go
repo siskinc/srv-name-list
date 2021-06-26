@@ -6,6 +6,7 @@ import (
 	"github.com/siskinc/srv-name-list/middlewares"
 	"github.com/siskinc/srv-name-list/routes/list_item"
 	"github.com/siskinc/srv-name-list/routes/list_type"
+	"github.com/siskinc/srv-name-list/routes/namespace"
 )
 
 func Init(router *gin.Engine) {
@@ -14,8 +15,16 @@ func Init(router *gin.Engine) {
 	// By default gin.DefaultWriter = os.Stdout
 	router.Use(gin.LoggerWithFormatter(middlewares.LoggerFormatter))
 	nameListGroup := router.Group("/name-list")
+	namespaceGroup := nameListGroup.Group("/namespace")
 	listTypeGroup := nameListGroup.Group("/type")
 	listItemGroup := nameListGroup.Group("/item")
+	// 命名空间
+	{
+		namespaceGroup.GET("/", namespace.QueryNamespace)
+		namespaceGroup.POST("/", namespace.CreateNamespace)
+		namespaceGroup.DELETE("/:id", namespace.DeleteNamespace)
+		namespaceGroup.PATCH("/:id", namespace.UpdateNamespace)
+	}
 	// 名单类型接口
 	{
 		listTypeGroup.GET("/", list_type.QueryListType)

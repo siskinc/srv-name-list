@@ -9,26 +9,25 @@ import (
 	listItemService "github.com/siskinc/srv-name-list/service/list_item"
 )
 
-
 // CreateListItem godoc
 // @TAGS 名单项
 // @Summary 名单项创建功能
 // @Description 名单项创建功能
 // @Accept json
 // @Produce json
-// @Param message body listItemService.ListItemCreateInfo true "名单属性"
+// @Param message body listItemService.CreateListItemInfo true "名单属性"
 // @Success 200 {object} httpx.JSONResult.{data=models.ListItem} "正常回包, 回复创建成功的名单类型数据"
 // @Router /item [post]
 func CreateListItem(c *gin.Context) {
-	req := &listItemService.ListItemCreateInfo{}
+	req := &listItemService.CreateListItemInfo{}
 	var err error
-	err = c.Bind(req)
+	err = c.ShouldBind(req)
 	if err != nil {
-		logrus.Errorf("cannot format data to listItemService.ListItemCreateInfo")
+		logrus.Errorf("cannot format data to listItemService.CreateListItemInfo")
 		httpx.SetRespErr(c, errorx.NewError(error_code.CustomForbiddenParameterInvalid, err))
 		return
 	}
-	listItemServiceObj := listItemService.NewListItemService()
+	listItemServiceObj := listItemService.NewService()
 	listItem, err := listItemServiceObj.Create(req)
 	if err != nil {
 		httpx.SetRespErr(c, err)

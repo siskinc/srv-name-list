@@ -128,7 +128,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/list_item.ListItemCreateInfo"
+                            "$ref": "#/definitions/list_item.CreateListItemInfo"
                         }
                     }
                 ],
@@ -213,7 +213,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/list_item.ListItemUpdateInfo"
+                            "$ref": "#/definitions/list_item.UpdateListItemInfo"
                         }
                     }
                 ],
@@ -239,6 +239,199 @@ var doc = `{
                 }
             }
         },
+        "/namespace": {
+            "get": {
+                "description": "命名空间查找功能",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "命名空间"
+                ],
+                "summary": "命名空间查找功能",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Code 命名空间code",
+                        "name": "code",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "PageIndex 页码",
+                        "name": "pageIndex",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "PageSize 分页数量",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "SortedField 排序字段",
+                        "name": "sortedField",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "正常回包, 回复查询成功的名单类型数据",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/httpx.JSONResultPaged"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.Namespace"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "命名空间创建功能",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "命名空间"
+                ],
+                "summary": "命名空间创建功能",
+                "parameters": [
+                    {
+                        "description": "名单属性",
+                        "name": "message",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/namespace.CreateNamespaceReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "正常回包, 回复创建成功的名单类型数据",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/httpx.JSONResult"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Namespace"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/namespace/{id}": {
+            "delete": {
+                "description": "命名空间删除功能, 通过namespace_id删除",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "命名空间"
+                ],
+                "summary": "命名空间删除功能",
+                "parameters": [
+                    {
+                        "minLength": 1,
+                        "type": "string",
+                        "description": "命名空间id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httpx.JSONResult"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "命名空间修改功能",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "命名空间"
+                ],
+                "summary": "命名空间修改功能",
+                "parameters": [
+                    {
+                        "minLength": 1,
+                        "type": "string",
+                        "description": "命名空间id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "名单属性",
+                        "name": "message",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/namespace.UpdateNamespaceReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "正常回包, 回复更新成功的名单类型数据",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/httpx.JSONResult"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Namespace"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/type": {
             "get": {
                 "description": "名单类型查找功能, 通过code, is_valid, 分页",
@@ -254,46 +447,33 @@ var doc = `{
                 "summary": "名单类型查找功能",
                 "parameters": [
                     {
-                        "type": "boolean",
-                        "description": "是否生效",
-                        "name": "is_valid",
-                        "in": "query"
-                    },
-                    {
-                        "minLength": 1,
                         "type": "string",
-                        "description": "名单类型编码",
                         "name": "code",
                         "in": "query"
                     },
                     {
-                        "minimum": 1,
-                        "type": "integer",
-                        "default": 1,
-                        "description": "页码",
-                        "name": "page_index",
+                        "type": "boolean",
+                        "name": "isValid",
                         "in": "query"
                     },
                     {
-                        "minimum": 10,
-                        "type": "integer",
-                        "default": 10,
-                        "description": "分页大小",
-                        "name": "page_size",
-                        "in": "query"
-                    },
-                    {
-                        "minLength": 1,
                         "type": "string",
-                        "description": "排序方式",
-                        "name": "sorted_field",
-                        "in": "query"
-                    },
-                    {
-                        "minLength": 1,
-                        "type": "string",
-                        "description": "命名空间",
                         "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "pageIndex",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "sortedField",
                         "in": "query"
                     }
                 ],
@@ -399,7 +579,7 @@ var doc = `{
                 }
             },
             "patch": {
-                "description": "名单类型修改功能, 通过code, is_valid, 分页",
+                "description": "名单类型修改功能",
                 "consumes": [
                     "application/json"
                 ],
@@ -493,7 +673,7 @@ var doc = `{
                 }
             }
         },
-        "list_item.ListItemCreateInfo": {
+        "list_item.CreateListItemInfo": {
             "type": "object",
             "required": [
                 "code",
@@ -524,7 +704,7 @@ var doc = `{
                 }
             }
         },
-        "list_item.ListItemUpdateInfo": {
+        "list_item.UpdateListItemInfo": {
             "type": "object",
             "properties": {
                 "extra": {
@@ -543,18 +723,24 @@ var doc = `{
             "properties": {
                 "code": {
                     "description": "名单类型编码",
-                    "type": "string"
+                    "type": "string",
+                    "example": "telephone"
                 },
                 "description": {
                     "description": "描述",
-                    "type": "string"
+                    "type": "string",
+                    "example": "description"
                 },
                 "fields": {
                     "description": "这类名单的值被构建的字段",
                     "type": "array",
                     "items": {
                         "type": "string"
-                    }
+                    },
+                    "example": [
+                        "telephone",
+                        "id_card"
+                    ]
                 },
                 "is_valid": {
                     "description": "是否生效",
@@ -562,16 +748,22 @@ var doc = `{
                 },
                 "namespace": {
                     "description": "命名空间",
-                    "type": "string"
+                    "type": "string",
+                    "example": "anti-fraud"
                 }
             }
         },
         "list_type.UpdateListTypeReq": {
             "type": "object",
+            "required": [
+                "description",
+                "is_valid"
+            ],
             "properties": {
                 "description": {
                     "description": "描述",
-                    "type": "string"
+                    "type": "string",
+                    "example": "description"
                 },
                 "is_valid": {
                     "description": "是否生效",
@@ -672,6 +864,57 @@ var doc = `{
                     "description": "value",
                     "type": "string",
                     "example": "13333333333"
+                }
+            }
+        },
+        "models.Namespace": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "命名空间code",
+                    "type": "string",
+                    "example": "anti-fraud"
+                },
+                "description": {
+                    "description": "描述",
+                    "type": "string",
+                    "example": "anti fraud use"
+                },
+                "id": {
+                    "description": "主键id",
+                    "type": "string",
+                    "example": "60d2b17f70d9d2f0db53f866"
+                }
+            }
+        },
+        "namespace.CreateNamespaceReq": {
+            "type": "object",
+            "required": [
+                "code",
+                "description"
+            ],
+            "properties": {
+                "code": {
+                    "description": "命名空间code",
+                    "type": "string",
+                    "example": "anti-fraud"
+                },
+                "description": {
+                    "description": "描述",
+                    "type": "string",
+                    "example": "anti fraud use"
+                }
+            }
+        },
+        "namespace.UpdateNamespaceReq": {
+            "type": "object",
+            "required": [
+                "description"
+            ],
+            "properties": {
+                "description": {
+                    "description": "描述",
+                    "type": "string"
                 }
             }
         }

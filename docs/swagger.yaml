@@ -29,7 +29,7 @@ definitions:
         description: 总数量
         type: integer
     type: object
-  list_item.ListItemCreateInfo:
+  list_item.CreateListItemInfo:
     properties:
       code:
         type: string
@@ -51,7 +51,7 @@ definitions:
     - namespace
     - values
     type: object
-  list_item.ListItemUpdateInfo:
+  list_item.UpdateListItemInfo:
     properties:
       extra:
         additionalProperties: true
@@ -65,12 +65,17 @@ definitions:
     properties:
       code:
         description: 名单类型编码
+        example: telephone
         type: string
       description:
         description: 描述
+        example: description
         type: string
       fields:
         description: 这类名单的值被构建的字段
+        example:
+        - telephone
+        - id_card
         items:
           type: string
         type: array
@@ -79,16 +84,21 @@ definitions:
         type: boolean
       namespace:
         description: 命名空间
+        example: anti-fraud
         type: string
     type: object
   list_type.UpdateListTypeReq:
     properties:
       description:
         description: 描述
+        example: description
         type: string
       is_valid:
         description: 是否生效
         type: boolean
+    required:
+    - description
+    - is_valid
     type: object
   models.ListItem:
     properties:
@@ -162,6 +172,43 @@ definitions:
         example: "13333333333"
         type: string
     type: object
+  models.Namespace:
+    properties:
+      code:
+        description: 命名空间code
+        example: anti-fraud
+        type: string
+      description:
+        description: 描述
+        example: anti fraud use
+        type: string
+      id:
+        description: 主键id
+        example: 60d2b17f70d9d2f0db53f866
+        type: string
+    type: object
+  namespace.CreateNamespaceReq:
+    properties:
+      code:
+        description: 命名空间code
+        example: anti-fraud
+        type: string
+      description:
+        description: 描述
+        example: anti fraud use
+        type: string
+    required:
+    - code
+    - description
+    type: object
+  namespace.UpdateNamespaceReq:
+    properties:
+      description:
+        description: 描述
+        type: string
+    required:
+    - description
+    type: object
 host: localhost:8000
 info:
   contact:
@@ -234,7 +281,7 @@ paths:
         name: message
         required: true
         schema:
-          $ref: '#/definitions/list_item.ListItemCreateInfo'
+          $ref: '#/definitions/list_item.CreateListItemInfo'
       produces:
       - application/json
       responses:
@@ -288,7 +335,7 @@ paths:
         name: message
         required: true
         schema:
-          $ref: '#/definitions/list_item.ListItemUpdateInfo'
+          $ref: '#/definitions/list_item.UpdateListItemInfo'
       produces:
       - application/json
       responses:
@@ -304,42 +351,148 @@ paths:
       summary: 名单项修改功能
       tags:
       - 名单项
+  /namespace:
+    get:
+      consumes:
+      - application/json
+      description: 命名空间查找功能
+      parameters:
+      - description: Code 命名空间code
+        in: query
+        name: code
+        type: string
+      - description: PageIndex 页码
+        in: query
+        name: pageIndex
+        type: integer
+      - description: PageSize 分页数量
+        in: query
+        name: pageSize
+        type: integer
+      - description: SortedField 排序字段
+        in: query
+        name: sortedField
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 正常回包, 回复查询成功的名单类型数据
+          schema:
+            allOf:
+            - $ref: '#/definitions/httpx.JSONResultPaged'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Namespace'
+                  type: array
+              type: object
+      summary: 命名空间查找功能
+      tags:
+      - 命名空间
+    post:
+      consumes:
+      - application/json
+      description: 命名空间创建功能
+      parameters:
+      - description: 名单属性
+        in: body
+        name: message
+        required: true
+        schema:
+          $ref: '#/definitions/namespace.CreateNamespaceReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 正常回包, 回复创建成功的名单类型数据
+          schema:
+            allOf:
+            - $ref: '#/definitions/httpx.JSONResult'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Namespace'
+              type: object
+      summary: 命名空间创建功能
+      tags:
+      - 命名空间
+  /namespace/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 命名空间删除功能, 通过namespace_id删除
+      parameters:
+      - description: 命名空间id
+        in: path
+        minLength: 1
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpx.JSONResult'
+      summary: 命名空间删除功能
+      tags:
+      - 命名空间
+    patch:
+      consumes:
+      - application/json
+      description: 命名空间修改功能
+      parameters:
+      - description: 命名空间id
+        in: path
+        minLength: 1
+        name: id
+        required: true
+        type: string
+      - description: 名单属性
+        in: body
+        name: message
+        required: true
+        schema:
+          $ref: '#/definitions/namespace.UpdateNamespaceReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 正常回包, 回复更新成功的名单类型数据
+          schema:
+            allOf:
+            - $ref: '#/definitions/httpx.JSONResult'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Namespace'
+              type: object
+      summary: 命名空间修改功能
+      tags:
+      - 命名空间
   /type:
     get:
       consumes:
       - application/json
       description: 名单类型查找功能, 通过code, is_valid, 分页
       parameters:
-      - description: 是否生效
-        in: query
-        name: is_valid
-        type: boolean
-      - description: 名单类型编码
-        in: query
-        minLength: 1
+      - in: query
         name: code
         type: string
-      - default: 1
-        description: 页码
-        in: query
-        minimum: 1
-        name: page_index
-        type: integer
-      - default: 10
-        description: 分页大小
-        in: query
-        minimum: 10
-        name: page_size
-        type: integer
-      - description: 排序方式
-        in: query
-        minLength: 1
-        name: sorted_field
-        type: string
-      - description: 命名空间
-        in: query
-        minLength: 1
+      - in: query
+        name: isValid
+        type: boolean
+      - in: query
         name: namespace
+        type: string
+      - in: query
+        name: pageIndex
+        type: integer
+      - in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: sortedField
         type: string
       produces:
       - application/json
@@ -409,7 +562,7 @@ paths:
     patch:
       consumes:
       - application/json
-      description: 名单类型修改功能, 通过code, is_valid, 分页
+      description: 名单类型修改功能
       parameters:
       - description: 名单类型id
         in: path

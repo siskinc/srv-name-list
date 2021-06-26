@@ -16,18 +16,18 @@ import (
 // @Description 名单项查找功能, 通过code, is_valid, 分页
 // @Accept json
 // @Produce json
-// @Param message query listItemService.ListItemQueryInfo false "a1111111111"
+// @Param message query listItemService.QueryListItemInfo false "a1111111111"
 // @Success 200 {object} httpx.JSONResultPaged.{data=[]models.ListItem} "正常回包, 回复查询成功的名单类型数据"
 // @Router /item [get]
 func QueryListItem(c *gin.Context) {
-	req := &listItemService.ListItemQueryInfo{}
-	err := c.Bind(req)
+	req := &listItemService.QueryListItemInfo{}
+	err := c.ShouldBind(req)
 	if err != nil {
-		logrus.Errorf("cannot format data to listItemService.ListItemQueryInfo")
+		logrus.Errorf("cannot format data to listItemService.QueryListItemInfo")
 		httpx.SetRespErr(c, errorx.NewError(error_code.CustomForbiddenParameterInvalid, err))
 		return
 	}
-	listItemServiceObj := listItemService.NewListItemService()
+	listItemServiceObj := listItemService.NewService()
 	listItemList, total, err := listItemServiceObj.Query(req)
 	if err != nil {
 		httpx.SetRespErr(c, err)

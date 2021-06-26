@@ -52,7 +52,7 @@ func TestRepoListTypeMgo_Create(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repo := &RepoListTypeMgo{
+			repo := &MongoRepo{
 				collection: tt.fields.collection,
 			}
 			if err := repo.Create(tt.args.listType); (err != nil) != tt.wantErr {
@@ -88,7 +88,7 @@ func TestRepoListTypeMgo_Delete(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repo := &RepoListTypeMgo{
+			repo := &MongoRepo{
 				collection: tt.fields.collection,
 			}
 			if err := repo.Delete(tt.args.listTypeId); (err != nil) != tt.wantErr {
@@ -131,10 +131,10 @@ func TestRepoListTypeMgo_Query(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repo := &RepoListTypeMgo{
+			repo := &MongoRepo{
 				collection: tt.fields.collection,
 			}
-			got, err := repo.Query(tt.args.filter, tt.args.pageIndex, tt.args.pageSize, tt.args.sortedField)
+			got, _, err := repo.Query(tt.args.filter, tt.args.pageIndex, tt.args.pageSize, tt.args.sortedField)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Query() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -174,10 +174,10 @@ func TestRepoListTypeMgo_Update(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repo := &RepoListTypeMgo{
+			repo := &MongoRepo{
 				collection: tt.fields.collection,
 			}
-			if err := repo.Update(tt.args.listTypeId, tt.args.isValid, tt.args.description); (err != nil) != tt.wantErr {
+			if _, err := repo.Update(tt.args.listTypeId, tt.args.isValid, tt.args.description); (err != nil) != tt.wantErr {
 				t.Errorf("Update() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

@@ -34,7 +34,7 @@ func DeleteListItem(c *gin.Context) {
 		)
 		return
 	}
-	listItemServiceObj := listItemService.NewListItemService()
+	listItemServiceObj := listItemService.NewService()
 	err = listItemServiceObj.Delete(listItemOid)
 	if err != nil {
 		httpx.SetRespErr(c, err)

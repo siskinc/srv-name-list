@@ -24,8 +24,20 @@ func MakeSortedFieldOpt(opt *options.FindOptions, sortedField string) *options.F
 	if opt == nil {
 		opt = options.Find()
 	}
+	if sortedField == "" {
+		sortedField = "-_id"
+	}
 	if sortedField != "" {
 		opt.SetSort(ConvertSort(sortedField))
 	}
+	return opt
+}
+
+func MakeReturnAfter(opt *options.FindOneAndUpdateOptions) *options.FindOneAndUpdateOptions {
+	if opt == nil {
+		opt = options.FindOneAndUpdate()
+	}
+	opt = options.FindOneAndUpdate()
+	opt.SetReturnDocument(options.After)
 	return opt
 }

@@ -4,11 +4,9 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/goools/tools/errorx"
-	"github.com/sirupsen/logrus"
 	"github.com/siskinc/srv-name-list/contants/error_code"
 	"github.com/siskinc/srv-name-list/internal/httpx"
-	listTypeRepo "github.com/siskinc/srv-name-list/repository/list_type"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	listTypeService "github.com/siskinc/srv-name-list/service/list_type"
 )
 
 // DeleteListType godoc
@@ -21,24 +19,19 @@ import (
 // @Success 200 {object} httpx.JSONResult "正常回包, 回复删除成功的名单类型数据"
 // @Router /type/{id} [delete]
 func DeleteListType(c *gin.Context) {
-	listTypeId := c.Param("id")
-	listTypeOid, err := primitive.ObjectIDFromHex(listTypeId)
+	req := &listTypeService.DeleteListTypeReq{}
+	err := c.ShouldBindUri(req)
 	if err != nil {
-		logrus.Errorf("list type id: %s, cannot convert to object id", listTypeId)
-		httpx.SetRespErr(
-			c,
-			errorx.NewError(
-				error_code.CustomForbiddenParameterInvalid,
-				fmt.Errorf("%s不是一个合法的id", listTypeId),
-			),
-		)
+		httpx.SetRespErr(c, errorx.NewError(error_code.CustomForbiddenParameterInvalid, fmt.Errorf("params is invalid")))
 		return
 	}
-	repo := listTypeRepo.NewRepoListTypeMgo()
-	err = repo.Delete(listTypeOid)
+
+	service := listTypeService.NewService()
+	err = service.Delete(req)
 	if err != nil {
 		httpx.SetRespErr(c, err)
 		return
 	}
-	httpx.SetRespJSON(c, nil, fmt.Sprintf("删除id为%s的数据成功", listTypeId))
+
+	httpx.SetRespJSON(c, nil, "")
 }

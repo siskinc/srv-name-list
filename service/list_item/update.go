@@ -11,12 +11,12 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type ListItemUpdateInfo struct {
+type UpdateListItemInfo struct {
 	IsValid *bool                   `json:"is_valid"` // 是否生效
 	Extra   *map[string]interface{} `json:"extra"`    // 可自定义的结构, 不管控
 }
 
-func (service *ListItemService) makeUpdater(info *ListItemUpdateInfo) bson.M {
+func (service *Service) makeUpdater(info *UpdateListItemInfo) bson.M {
 	value := bson.M{}
 	if info.IsValid != nil {
 		value["is_valid"] = *info.IsValid
@@ -32,7 +32,7 @@ func (service *ListItemService) makeUpdater(info *ListItemUpdateInfo) bson.M {
 	}
 }
 
-func (service *ListItemService) Update(oid primitive.ObjectID, info *ListItemUpdateInfo) (listItem *models.ListItem, err error) {
+func (service *Service) Update(oid primitive.ObjectID, info *UpdateListItemInfo) (listItem *models.ListItem, err error) {
 	if mongox.EmptyOid(oid) {
 		err = errorx.NewError(error_code.CustomForbiddenParameterInvalid, fmt.Errorf("oid: %s is a empty oid", oid.Hex()))
 		return
@@ -41,17 +41,10 @@ func (service *ListItemService) Update(oid primitive.ObjectID, info *ListItemUpd
 	if updater["$set"] == nil {
 		return
 	}
-	err = service.listItemRepoObj.UpdateById(oid, updater)
+	listItem, err = service.listItemRepoObj.UpdateById(oid, updater)
 	if err != nil {
 		logrus.Errorf("update by id have an err: %v", err)
 		return
 	}
-
-	listItem, err = service.listItemRepoObj.FindById(oid)
-	if err != nil {
-		logrus.Errorf("find list item by id have an err: %v", err)
-		return
-	}
-
 	return
 }

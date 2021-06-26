@@ -8,7 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type ListItemQueryInfo struct {
+type QueryListItemInfo struct {
 	// 命名空间
 	Namespace   string  `form:"namespace" binding:"required"`
 	// 是否生效
@@ -23,9 +23,9 @@ type ListItemQueryInfo struct {
 	SortedField *string `form:"sorted_field"`
 }
 
-func (service *ListItemService) Query(info *ListItemQueryInfo) (results []*models.ListItem, total int64, err error) {
+func (service *Service) Query(info *QueryListItemInfo) (results []*models.ListItem, total int64, err error) {
 	if info == nil {
-		err = errorx.NewError(error_code.CustomForbiddenConflictListType, fmt.Errorf("ListItemQueryInfo is nil"))
+		err = errorx.NewError(error_code.CustomForbiddenConflictListType, fmt.Errorf("QueryListItemInfo is nil"))
 		return
 	}
 	filter := bson.D{

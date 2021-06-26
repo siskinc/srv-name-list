@@ -23,7 +23,7 @@ type UpdateListItemReq struct {
 // @Accept json
 // @Produce json
 // @Param id path string true "名单项id" minlength(1)
-// @Param message body listItemService.ListItemUpdateInfo true "名单属性"
+// @Param message body listItemService.UpdateListItemInfo true "名单属性"
 // @Success 200 {object} httpx.JSONResult.{data=models.ListItem} "正常回包, 回复更新成功的名单类型数据"
 // @Router /item/{id} [patch]
 func UpdateListItem(c *gin.Context) {
@@ -40,14 +40,14 @@ func UpdateListItem(c *gin.Context) {
 		)
 		return
 	}
-	req := &listItemService.ListItemUpdateInfo{}
-	err = c.Bind(req)
+	req := &listItemService.UpdateListItemInfo{}
+	err = c.ShouldBind(req)
 	if err != nil {
-		logrus.Errorf("cannot format data to listItemService.ListItemUpdateInfo")
+		logrus.Errorf("cannot format data to listItemService.UpdateListItemInfo")
 		httpx.SetRespErr(c, errorx.NewError(error_code.CustomForbiddenParameterInvalid, err))
 		return
 	}
-	listItemServiceObj := listItemService.NewListItemService()
+	listItemServiceObj := listItemService.NewService()
 	listItem, err := listItemServiceObj.Update(listItemOid, req)
 	if err != nil {
 		httpx.SetRespErr(c, err)

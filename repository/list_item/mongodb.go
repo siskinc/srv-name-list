@@ -19,17 +19,17 @@ func NewCollection() *mongo.Collection {
 	return driver.DataBase(driver.DatabaseName).Collection(types.CollectionNameListItem)
 }
 
-type RepoListItemMgo struct {
+type MongoRepo struct {
 	collection *mongo.Collection
 }
 
-func NewRepoListItemMgo() *RepoListItemMgo {
-	return &RepoListItemMgo{
+func NewMongoRepo() *MongoRepo {
+	return &MongoRepo{
 		collection: NewCollection(),
 	}
 }
 
-func (repo *RepoListItemMgo) Create(listItem *models.ListItem) error {
+func (repo *MongoRepo) Create(listItem *models.ListItem) error {
 	if listItem == nil {
 		return fmt.Errorf("list item object is nil")
 	}
@@ -42,18 +42,25 @@ func (repo *RepoListItemMgo) Create(listItem *models.ListItem) error {
 	return nil
 }
 
-func (repo *RepoListItemMgo) UpdateById(oid primitive.ObjectID, updater bson.M) (err error) {
-	_, err = repo.collection.UpdateByID(context.Background(), oid, updater)
+func (repo *MongoRepo) UpdateById(oid primitive.ObjectID, updater bson.M) (listItem *models.ListItem,err error) {
+	filter := mongox.MakeQueryByID(oid)
+	result := repo.collection.FindOneAndUpdate(context.Background(), filter, updater, mongox.MakeReturnAfter(nil))
+	err = result.Err()
+	if err != nil {
+		return
+	}
+	listItem = &models.ListItem{}
+	err = result.Decode(listItem)
 	return
 }
 
-func (repo *RepoListItemMgo) DeleteById(oid primitive.ObjectID) (err error) {
+func (repo *MongoRepo) DeleteById(oid primitive.ObjectID) (err error) {
 	query := mongox.MakeQueryByID(oid)
 	_, err = repo.collection.DeleteOne(context.Background(), query)
 	return
 }
 
-func (repo *RepoListItemMgo) FindById(oid primitive.ObjectID) (listItem *models.ListItem, err error) {
+func (repo *MongoRepo) FindById(oid primitive.ObjectID) (listItem *models.ListItem, err error) {
 	query := mongox.MakeQueryByID(oid)
 	result := repo.collection.FindOne(context.Background(), query)
 	listItem = &models.ListItem{}
@@ -65,7 +72,7 @@ func (repo *RepoListItemMgo) FindById(oid primitive.ObjectID) (listItem *models.
 	return
 }
 
-func (repo *RepoListItemMgo) Query(filter bson.D, pageIndex, pageSize int64, sortedField string) ([]*models.ListItem, int64, error) {
+func (repo *MongoRepo) Query(filter bson.D, pageIndex, pageSize int64, sortedField string) ([]*models.ListItem, int64, error) {
 	var err error
 	if filter == nil {
 		filter = bson.D{}

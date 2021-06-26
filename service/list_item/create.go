@@ -5,12 +5,12 @@ import (
 	"github.com/goools/tools/errorx"
 	"github.com/siskinc/srv-name-list/contants/error_code"
 	"github.com/siskinc/srv-name-list/models"
-	listTypeRepo "github.com/siskinc/srv-name-list/repository/list_type"
-	"go.mongodb.org/mongo-driver/bson"
+	listTypeService "github.com/siskinc/srv-name-list/service/list_type"
+	namespaceService "github.com/siskinc/srv-name-list/service/namespace"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type ListItemCreateInfo struct {
+type CreateListItemInfo struct {
 	Namespace string                 `json:"namespace" binding:"required"`
 	Code      string                 `json:"code" binding:"required"`
 	IsValid   bool                   `json:"is_valid" binding:"required"`
@@ -18,43 +18,43 @@ type ListItemCreateInfo struct {
 	Extra     map[string]interface{} `json:"extra"`
 }
 
-
-func (service *ListItemService) Create(listItemCreateInfo *ListItemCreateInfo) (*models.ListItem, error) {
+func (service *Service) Create(listItemCreateInfo *CreateListItemInfo) (*models.ListItem, error) {
 	if listItemCreateInfo == nil {
 		return nil, fmt.Errorf("list item create info is nil")
 	}
 
-	makeListTypeQueryFilter := func(namespace, code string) bson.D {
-		return bson.D{
-			{
-				Key:   "namespace",
-				Value: namespace,
-			},
-			{
-				Key:   "code",
-				Value: code,
-			},
-		}
+	namespaceServiceObj := namespaceService.NewService()
+	exist, err := namespaceServiceObj.CheckExist(listItemCreateInfo.Namespace)
+	if err != nil {
+		return nil, fmt.Errorf("find %s namespace have an err: %v", listItemCreateInfo.Namespace, err)
+	}
+
+	if !exist {
+		return nil, errorx.NewError(error_code.CustomForbiddenNotFoundNamespace, fmt.Errorf("not found %s namespace", listItemCreateInfo.Namespace))
 	}
 
 	namespace := listItemCreateInfo.Namespace
 	code := listItemCreateInfo.Code
 
-	listTypeRepoObj := listTypeRepo.NewRepoListTypeMgo()
-	listTypeQuery := makeListTypeQueryFilter(namespace, code)
-	listTypeList, _, err := listTypeRepoObj.Query(listTypeQuery, 1, 10, "")
+	listTypeServiceObj := listTypeService.NewService()
+	req := &listTypeService.QueryListTypeReq{
+		Namespace: &namespace,
+		Code:      &code,
+	}
+	listTypeList, _, err := listTypeServiceObj.QueryListType(req)
 	if err != nil {
 		return nil, err
 	}
 	if len(listTypeList) <= 0 {
-		err = errorx.NewError(error_code.CustomForbiddenNotFoundListType, fmt.Errorf("未找到对应的名单类型，请添加"))
+		err = errorx.NewError(error_code.CustomForbiddenNotFoundListType, fmt.Errorf("not found list type %s", code))
 		return nil, err
 	}
 	listType := listTypeList[0]
 	fields := listType.Fields
 	values := listItemCreateInfo.Values
 	if len(fields) != len(values) {
-		err = errorx.NewError(error_code.CustomForbiddenParameterInvalid, fmt.Errorf("值的数量和查找到的名单类型字段的数量不对等"))
+		err = errorx.NewError(error_code.CustomForbiddenParameterInvalid, fmt.Errorf("values len not eqaul list type fields len, fields: %+v", listType.Fields))
+		return nil, err
 	}
 	multiValue := service.makeMultiValue(fields, values)
 	value := service.makeValue(multiValue)
