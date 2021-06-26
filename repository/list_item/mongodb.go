@@ -63,6 +63,10 @@ func (repo *MongoRepo) DeleteById(oid primitive.ObjectID) (err error) {
 func (repo *MongoRepo) FindById(oid primitive.ObjectID) (listItem *models.ListItem, err error) {
 	query := mongox.MakeQueryByID(oid)
 	result := repo.collection.FindOne(context.Background(), query)
+	err = result.Err()
+	if err != nil {
+		return
+	}
 	listItem = &models.ListItem{}
 	err = result.Decode(listItem)
 	if err != nil {

@@ -28,14 +28,14 @@ func (service *Service) QueryListType(req *QueryListTypeReq) (result []*models.L
 	if req.IsValid != nil {
 		filter = append(filter, bson.E{Key: "is_valid", Value: *req.IsValid})
 	}
-	if req.Code != nil  && *req.Code != ""{
+	if req.Code != nil && *req.Code != "" {
 		regexFilter := bson.E{
 			Key:   "code",
 			Value: bson.D{{"$regex", primitive.Regex{Pattern: fmt.Sprintf("%s", *req.Code), Options: "i"}}},
 		}
 		filter = append(filter, regexFilter)
 	}
-	if req.Namespace != nil && *req.Namespace != ""{
+	if req.Namespace != nil && *req.Namespace != "" {
 		filter = append(filter, bson.E{Key: "namespace", Value: *req.Namespace})
 	}
 	sortedField := "-_id"
@@ -43,5 +43,10 @@ func (service *Service) QueryListType(req *QueryListTypeReq) (result []*models.L
 		sortedField = *req.SortedField
 	}
 	result, total, err = service.listTypeRepoObj.Query(filter, req.PageIndex, req.PageSize, sortedField)
+	return
+}
+
+func (service *Service) QueryAll(filter bson.D) (listTypeList []*models.ListType, err error) {
+	listTypeList, _, err = service.listTypeRepoObj.Query(filter, 0, 0, "")
 	return
 }

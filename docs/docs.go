@@ -154,6 +154,98 @@ var doc = `{
                 }
             }
         },
+        "/item-hit/all": {
+            "post": {
+                "description": "名单项命中, 返回命中的所有名单项",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "名单项命中"
+                ],
+                "summary": "名单项命中",
+                "parameters": [
+                    {
+                        "description": "预命中信息",
+                        "name": "message",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/list_item.ItemHitAllReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "正常回包",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/httpx.JSONResult"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/list_item.ItemHitAllResp"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/item-hit/pre": {
+            "post": {
+                "description": "名单项预命中, 指定某个名单项, 能够判断数据是否能够命中该名单项, 如果不能, 输出不能命中的原因",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "名单项命中"
+                ],
+                "summary": "名单项预命中",
+                "parameters": [
+                    {
+                        "description": "命中信息",
+                        "name": "message",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/list_item.ItemHitPreReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "正常回包, 回复创建成功的名单类型数据",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/httpx.JSONResult"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/list_item.ItemHitPreResp"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/item/{id}": {
             "delete": {
                 "description": "名单项删除功能, 通过list_item_id删除",
@@ -701,6 +793,72 @@ var doc = `{
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "list_item.ItemHitAllReq": {
+            "type": "object",
+            "required": [
+                "data",
+                "namespace"
+            ],
+            "properties": {
+                "code_list": {
+                    "description": "名单类型code, 如果不传, 或者传入的长度为0, 默认命中所有code",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "data": {
+                    "description": "数据",
+                    "type": "string"
+                },
+                "namespace": {
+                    "description": "命名空间",
+                    "type": "string"
+                }
+            }
+        },
+        "list_item.ItemHitAllResp": {
+            "type": "object",
+            "properties": {
+                "hit_list_item_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ListItem"
+                    }
+                }
+            }
+        },
+        "list_item.ItemHitPreReq": {
+            "type": "object",
+            "required": [
+                "data",
+                "list_item_id"
+            ],
+            "properties": {
+                "data": {
+                    "description": "数据",
+                    "type": "string"
+                },
+                "list_item_id": {
+                    "description": "名单项ID",
+                    "type": "string"
+                }
+            }
+        },
+        "list_item.ItemHitPreResp": {
+            "type": "object",
+            "properties": {
+                "hit": {
+                    "type": "boolean"
+                },
+                "list_item": {
+                    "$ref": "#/definitions/models.ListItem"
+                },
+                "resource": {
+                    "type": "string"
                 }
             }
         },

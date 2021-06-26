@@ -13,6 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func NewCollection() *mongo.Collection {
@@ -108,7 +109,10 @@ func (repo *MongoRepo) Query(filter bson.D, pageIndex, pageSize int64, sortedFie
 	if filter == nil {
 		filter = bson.D{}
 	}
-	opt := mongox.MakeFindPageOpt(nil, pageIndex, pageSize)
+	var opt *options.FindOptions
+	if pageSize != 0 {
+		opt = mongox.MakeFindPageOpt(nil, pageIndex, pageSize)
+	}
 	opt = mongox.MakeSortedFieldOpt(opt, sortedField)
 	total, err := repo.collection.CountDocuments(context.Background(), filter)
 	if err != nil {

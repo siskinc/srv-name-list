@@ -51,6 +51,51 @@ definitions:
     - namespace
     - values
     type: object
+  list_item.ItemHitAllReq:
+    properties:
+      code_list:
+        description: 名单类型code, 如果不传, 或者传入的长度为0, 默认命中所有code
+        items:
+          type: string
+        type: array
+      data:
+        description: 数据
+        type: string
+      namespace:
+        description: 命名空间
+        type: string
+    required:
+    - data
+    - namespace
+    type: object
+  list_item.ItemHitAllResp:
+    properties:
+      hit_list_item_list:
+        items:
+          $ref: '#/definitions/models.ListItem'
+        type: array
+    type: object
+  list_item.ItemHitPreReq:
+    properties:
+      data:
+        description: 数据
+        type: string
+      list_item_id:
+        description: 名单项ID
+        type: string
+    required:
+    - data
+    - list_item_id
+    type: object
+  list_item.ItemHitPreResp:
+    properties:
+      hit:
+        type: boolean
+      list_item:
+        $ref: '#/definitions/models.ListItem'
+      resource:
+        type: string
+    type: object
   list_item.UpdateListItemInfo:
     properties:
       extra:
@@ -297,6 +342,60 @@ paths:
       summary: 名单项创建功能
       tags:
       - 名单项
+  /item-hit/all:
+    post:
+      consumes:
+      - application/json
+      description: 名单项命中, 返回命中的所有名单项
+      parameters:
+      - description: 预命中信息
+        in: body
+        name: message
+        required: true
+        schema:
+          $ref: '#/definitions/list_item.ItemHitAllReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 正常回包
+          schema:
+            allOf:
+            - $ref: '#/definitions/httpx.JSONResult'
+            - properties:
+                data:
+                  $ref: '#/definitions/list_item.ItemHitAllResp'
+              type: object
+      summary: 名单项命中
+      tags:
+      - 名单项命中
+  /item-hit/pre:
+    post:
+      consumes:
+      - application/json
+      description: 名单项预命中, 指定某个名单项, 能够判断数据是否能够命中该名单项, 如果不能, 输出不能命中的原因
+      parameters:
+      - description: 命中信息
+        in: body
+        name: message
+        required: true
+        schema:
+          $ref: '#/definitions/list_item.ItemHitPreReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 正常回包, 回复创建成功的名单类型数据
+          schema:
+            allOf:
+            - $ref: '#/definitions/httpx.JSONResult'
+            - properties:
+                data:
+                  $ref: '#/definitions/list_item.ItemHitPreResp'
+              type: object
+      summary: 名单项预命中
+      tags:
+      - 名单项命中
   /item/{id}:
     delete:
       consumes:

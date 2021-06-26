@@ -24,6 +24,7 @@ require (
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
 	github.com/swaggo/gin-swagger v1.3.0
 	github.com/swaggo/swag v1.7.0
+	github.com/tidwall/gjson v1.8.0
 	github.com/ugorji/go v1.2.6 // indirect
 	go.mongodb.org/mongo-driver v1.5.3
 	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e // indirect
