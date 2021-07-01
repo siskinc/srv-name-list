@@ -347,8 +347,20 @@ var doc = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Code 命名空间code",
+                        "description": "Code 命名空间code（模糊查询）",
                         "name": "code",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Description 命名空间的描述（模糊查询）",
+                        "name": "description",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID 命名空间ID（精确查询）",
+                        "name": "id",
                         "in": "query"
                     },
                     {

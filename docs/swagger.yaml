@@ -456,9 +456,17 @@ paths:
       - application/json
       description: 命名空间查找功能
       parameters:
-      - description: Code 命名空间code
+      - description: Code 命名空间code（模糊查询）
         in: query
         name: code
+        type: string
+      - description: Description 命名空间的描述（模糊查询）
+        in: query
+        name: description
+        type: string
+      - description: ID 命名空间ID（精确查询）
+        in: query
+        name: id
         type: string
       - description: PageIndex 页码
         in: query
