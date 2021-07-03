@@ -33,5 +33,6 @@ func DeleteNamespace(c *gin.Context) {
 		httpx.SetRespErr(c, err)
 		return
 	}
+	httpx.SetRespJSON(c, nil, "")
 	return
 }
