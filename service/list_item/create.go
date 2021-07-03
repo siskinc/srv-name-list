@@ -2,6 +2,7 @@ package list_item
 
 import (
 	"fmt"
+
 	"github.com/goools/tools/errorx"
 	"github.com/siskinc/srv-name-list/contants/error_code"
 	"github.com/siskinc/srv-name-list/models"
@@ -21,6 +22,9 @@ type CreateListItemInfo struct {
 func (service *Service) Create(listItemCreateInfo *CreateListItemInfo) (*models.ListItem, error) {
 	if listItemCreateInfo == nil {
 		return nil, fmt.Errorf("list item create info is nil")
+	}
+	if listItemCreateInfo.Extra == nil {
+		listItemCreateInfo.Extra = make(map[string]interface{})
 	}
 
 	namespaceServiceObj := namespaceService.NewService()
