@@ -2,6 +2,7 @@ package list_type
 
 import (
 	"fmt"
+
 	"github.com/goools/tools/errorx"
 	"github.com/siskinc/srv-name-list/contants/error_code"
 	"github.com/siskinc/srv-name-list/internal/mongox"
@@ -11,7 +12,7 @@ import (
 
 type UpdateListTypeReq struct {
 	OId         string `json:"-" swaggerignore:"true"`
-	IsValid     bool   `json:"is_valid" binding:"required"`                          // 是否生效
+	IsValid     bool   `json:"is_valid"`                                             // 是否生效
 	Description string `json:"description" example:"description" binding:"required"` // 描述
 }
 
