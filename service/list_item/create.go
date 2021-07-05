@@ -14,7 +14,7 @@ import (
 type CreateListItemInfo struct {
 	Namespace string                 `json:"namespace" binding:"required"`
 	Code      string                 `json:"code" binding:"required"`
-	IsValid   bool                   `json:"is_valid" binding:"required"`
+	IsValid   bool                   `json:"is_valid"`
 	Values    []string               `json:"values" binding:"required"` // 与list type中的fields一一对应的
 	Extra     map[string]interface{} `json:"extra"`
 }
