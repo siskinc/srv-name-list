@@ -1,13 +1,22 @@
 package routes
 
 import (
+	"html/template"
+	"net/http"
+	"strings"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/gobuffalo/packr/v2"
+	"github.com/sirupsen/logrus"
+	"github.com/siskinc/srv-name-list/global"
 	"github.com/siskinc/srv-name-list/middlewares"
 	"github.com/siskinc/srv-name-list/routes/list_item"
 	"github.com/siskinc/srv-name-list/routes/list_item_hit"
 	"github.com/siskinc/srv-name-list/routes/list_type"
 	"github.com/siskinc/srv-name-list/routes/namespace"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func Init(router *gin.Engine) {
@@ -46,4 +55,50 @@ func Init(router *gin.Engine) {
 		listItemHitGroup.POST("/pre", list_item_hit.ItemHitPre) // 预计算，针对某一个名单
 		listItemHitGroup.POST("/all", list_item_hit.ItemHitAll) // 针对所有名单
 	}
+
+	// swagger
+	{
+		url := ginSwagger.URL("http://" + global.Config.SwaggerHost + "/swagger/doc.json") // The url pointing to API definition
+		router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
+	}
+
+	// frontend
+	{
+		staticBox := packr.New("static", "../frontend/static")
+		router.StaticFS("/static", staticBox)
+		frontendBox := packr.New("favicon.ico", "../frontend")
+		// router.StaticFS("/favicon.ico", frontendBox)
+		t := template.New("tmp")
+		var err error
+		t, err = loadTemplate(t)
+		if err != nil {
+			logrus.Fatalf("load template have an err: %v", err)
+		}
+		router.SetHTMLTemplate(t)
+		router.GET("/", func(c *gin.Context) {
+			c.HTML(http.StatusOK, "index.html", gin.H{})
+		})
+		router.GET("/favicon.ico", gin.WrapH(http.FileServer(frontendBox)))
+		// frontBox := packr.New("frontend", "../frontend")
+		// router.StaticFS("/", frontBox)
+	}
+}
+
+func loadTemplate(t *template.Template) (*template.Template, error) {
+	box := packr.New("tmp", "../frontend")
+	for _, file := range box.List() {
+		if !strings.HasSuffix(file, ".html") {
+			continue
+		}
+		h, err := box.FindString(file)
+		if err != nil {
+			return nil, err
+		}
+		//拼接方式，组装模板  admin/index.html 这种，方便调用
+		t, err = t.New(file).Parse(h)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return t, nil
 }

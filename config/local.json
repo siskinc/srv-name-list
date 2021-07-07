@@ -2,5 +2,8 @@
   "mongo_db_driver": {
     "uri": "mongodb://nsqd:27017/name_list",
     "database_name": "name_list"
-  }
+  },
+  "host": "0.0.0.0",
+  "port": 8000,
+  "swagger_host": "localhost:8000"
 }

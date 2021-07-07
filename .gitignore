@@ -2,3 +2,4 @@
 *.exe
 srv-name-list
 go.sum
+frontend
